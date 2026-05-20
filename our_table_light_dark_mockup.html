@@ -1,0 +1,186 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.wr{padding:1.5rem 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.tabs{display:flex;gap:6px;justify-content:center;margin-bottom:1.25rem;flex-wrap:wrap}
+.tab{padding:5px 16px;border-radius:100px;border:1px solid #B05040;background:transparent;font-size:12px;cursor:pointer;color:#B05040;transition:all 0.15s;font-family:inherit}
+.tab.on{background:#B05040;color:white}
+.phones{display:flex;justify-content:center;gap:20px}
+.col{text-align:center}
+.lbl{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:#999;margin-bottom:8px}
+.phone{width:228px;background:#111;border-radius:38px;padding:9px;display:inline-block;box-shadow:0 0 0 1px #2A2A2A, 0 20px 40px rgba(0,0,0,0.25)}
+.inner{border-radius:30px;overflow:hidden;height:464px;position:relative}
+.notch{width:66px;height:20px;background:#111;border-radius:0 0 14px 14px;position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:5}
+.sb{display:flex;justify-content:space-between;align-items:center;padding:24px 14px 4px;font-size:9px;font-weight:600}
+.nav-bar{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-around;align-items:center;padding:8px 0 14px;border-top:0.5px solid}
+.ni{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:9px;font-family:inherit}
+</style>
+<div class="wr">
+  <div class="tabs">
+    <button class="tab on" onclick="show(0)">Home</button>
+    <button class="tab" onclick="show(1)">Recipe</button>
+    <button class="tab" onclick="show(2)">Grocery List</button>
+    <button class="tab" onclick="show(3)">Fridge Scanner</button>
+  </div>
+  <div class="phones">
+    <div class="col">
+      <div class="lbl">Light Mode</div>
+      <div class="phone"><div class="inner" id="lp"><div class="notch"></div></div></div>
+    </div>
+    <div class="col">
+      <div class="lbl">Dark Mode</div>
+      <div class="phone"><div class="inner" id="dp"><div class="notch"></div></div></div>
+    </div>
+  </div>
+</div>
+<script>
+const L={bg:'#FAF7F0',card:'#FFFFFF',primary:'#B05040',secondary:'#7A8C52',text:'#2C2416',muted:'#8A7060',border:'#E8DDD5',chip:'#F0EBE6',chipTx:'#8A7060',hero:'#D4A090',hero2:'#B8CFA0',hero3:'#B87868'};
+const D={bg:'#1C1917',card:'#2E2A27',primary:'#E8692A',secondary:'#9AB86A',text:'#FEFAF6',muted:'#C8BAB2',border:'rgba(255,255,255,0.15)',chip:'#332F2C',chipTx:'#D8CCC4',hero:'#3A2220',hero2:'#2A3820',hero3:'#2E1A18'};
+
+function sb(c){return`<div class="sb" style="background:${c.bg};color:${c.text}"><span>9:41</span><span style="display:flex;gap:3px;align-items:center"><svg width="11" height="8" viewBox="0 0 24 16" fill="${c.muted}"><rect x="0" y="2" width="20" height="12" rx="2" stroke="${c.muted}" stroke-width="1.5" fill="none"/><rect x="20" y="5" width="3" height="6" rx="1" fill="${c.muted}"/><rect x="1.5" y="3.5" width="11" height="9" rx="1" fill="${c.primary}"/></svg></span></div>`;}
+
+function nav(c,active){
+  const items=[['Home','M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'],['Search','M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z'],['Fridge','M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm0 7h14'],['List','M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9l2 2 4-4'],['Me','M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z']];
+  return`<div class="nav-bar" style="background:${c.bg};border-top-color:${c.border}">${items.map(([n,p],i)=>`<div class="ni" style="color:${i===active?c.primary:c.muted}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="${p}"/></svg><span>${n}</span></div>`).join('')}</div>`;
+}
+
+function homeScreen(c){
+  return`<div style="height:100%;background:${c.bg};position:relative;overflow:hidden">
+  ${sb(c)}
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:2px 14px 6px">
+    <div style="font-size:20px;font-weight:700;color:${c.primary};letter-spacing:-0.5px;font-family:'Georgia',serif">Our Table</div>
+    <div style="width:30px;height:30px;border-radius:50%;background:${c.primary};display:flex;align-items:center;justify-content:center">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/></svg>
+    </div>
+  </div>
+  <div style="padding:0 14px 8px">
+    <div style="font-size:12px;font-weight:600;color:${c.text}">Good evening, Will</div>
+    <div style="font-size:9px;color:${c.muted}">What are you cooking tonight?</div>
+  </div>
+  <div style="margin:0 14px 10px;border-radius:14px;overflow:hidden;border:0.5px solid ${c.border}">
+    <div style="height:100px;background:${c.hero};position:relative;display:flex;align-items:center;justify-content:center">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 1v3M10 1v3M14 1v3"/></svg>
+      <div style="position:absolute;bottom:8px;left:10px"><span style="background:rgba(0,0,0,0.4);border-radius:6px;padding:2px 7px;font-size:8px;color:white;font-weight:500">FEATURED</span></div>
+    </div>
+    <div style="padding:8px 10px;background:${c.card}">
+      <div style="font-size:11px;font-weight:600;color:${c.text}">Spaghetti Carbonara</div>
+      <div style="display:flex;gap:6px;margin-top:3px;align-items:center">
+        <span style="font-size:10px;color:${c.muted}">25 min</span>
+        <span style="font-size:10px;color:${c.muted}">•</span>
+        <span style="font-size:10px;color:${c.primary};font-weight:700">★ 4.8</span>
+        <span style="margin-left:auto;display:inline-flex;align-items:center;gap:3px;font-size:9px;padding:3px 9px;border-radius:100px;background:${c.chip};color:${c.secondary};font-weight:600;border:0.5px solid ${c.border}"><svg width="7" height="7" viewBox="0 0 24 24" fill="${c.secondary}"><path d="M5 3l14 9-14 9V3z"/></svg>Saved from TikTok</span>
+      </div>
+    </div>
+  </div>
+  <div style="padding:0 14px 8px">
+    <div style="font-size:10px;font-weight:600;color:${c.text};margin-bottom:5px">Browse by</div>
+    <div style="display:flex;gap:5px">
+      ${['Quick','Italian','Asian','Vegetarian'].map((t,i)=>`<span style="font-size:10px;padding:4px 9px;border-radius:100px;background:${i===0?c.primary:c.chip};color:${i===0?'white':c.chipTx};font-weight:${i===0?600:400}">${t}</span>`).join('')}
+    </div>
+  </div>
+  <div style="padding:0 14px">
+    <div style="font-size:10px;font-weight:600;color:${c.text};margin-bottom:6px">Saved from Social</div>
+    <div style="display:flex;gap:7px">
+      ${[['Thai Green Curry','32 min',c.hero2],['Avocado Toast','12 min',c.hero3]].map(([n,t,col])=>`<div style="flex:1;border-radius:10px;overflow:hidden;border:0.5px solid ${c.border}">
+        <div style="height:52px;background:${col};display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+        <div style="padding:5px 7px;background:${c.card}"><div style="font-size:10px;font-weight:600;color:${c.text};line-height:1.2">${n}</div><div style="font-size:9px;color:${c.muted}">${t}</div></div>
+      </div>`).join('')}
+    </div>
+  </div>
+  ${nav(c,0)}</div>`;
+}
+
+function recipeScreen(c){
+  return`<div style="height:100%;background:${c.bg};position:relative;overflow:hidden">
+  <div style="height:150px;background:${c.hero};position:relative;display:flex;align-items:center;justify-content:center">
+    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 1v3M10 1v3M14 1v3"/></svg>
+    <div style="position:absolute;top:12px;left:12px;width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+    </div>
+  </div>
+  <div style="padding:10px 14px;position:relative">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+      <div style="font-size:14px;font-weight:700;color:${c.text};max-width:155px;line-height:1.2">Spaghetti Carbonara</div>
+      <span style="font-size:12px;color:${c.primary};font-weight:700">★ 4.8</span>
+    </div>
+    <div style="display:flex;gap:5px;margin-bottom:8px">
+      ${['25 min','2 servings','Medium'].map(t=>`<span style="font-size:10px;padding:3px 8px;border-radius:100px;background:${c.chip};color:${c.chipTx}">${t}</span>`).join('')}
+    </div>
+    <button style="width:100%;padding:7px;border-radius:10px;border:1.5px solid ${c.secondary};background:transparent;color:${c.secondary};font-size:10px;font-weight:600;cursor:pointer;font-family:inherit;margin-bottom:10px">+ Add to Grocery List</button>
+    <div style="font-size:10px;font-weight:600;color:${c.text};margin-bottom:5px">Ingredients</div>
+    ${[['Spaghetti','200g'],['Pancetta','100g'],['Eggs','3 large'],['Parmesan','50g'],['Black pepper','to taste']].map(([item,amt])=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid ${c.border}"><span style="font-size:9px;color:${c.text}">${item}</span><span style="font-size:9px;color:${c.muted}">${amt}</span></div>`).join('')}
+  </div>
+  <div style="position:absolute;bottom:60px;left:14px;right:14px">
+    <button style="width:100%;padding:10px;border-radius:12px;border:none;background:${c.primary};color:white;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit">Start Cooking</button>
+  </div>
+  ${nav(c,0)}</div>`;
+}
+
+function groceryScreen(c){
+  const todo=[['Spaghetti','200g'],['Pancetta','100g'],['Parmesan','50g']];
+  const done=[['Eggs','3 large'],['Heavy cream','100ml']];
+  return`<div style="height:100%;background:${c.bg};position:relative;overflow:hidden">
+  ${sb(c)}
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:2px 14px 10px">
+    <div style="font-size:16px;font-weight:700;color:${c.text}">Grocery List</div>
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${c.muted}" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+  </div>
+  <div style="padding:0 14px;overflow:hidden">
+    <div style="font-size:9px;font-weight:700;color:${c.primary};text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px">Spaghetti Carbonara</div>
+    ${todo.map(([item,amt])=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;margin-bottom:4px;border-radius:10px;background:${c.card};border:0.5px solid ${c.border}">
+      <div style="width:16px;height:16px;border-radius:50%;border:1.5px solid ${c.border};flex-shrink:0"></div>
+      <span style="font-size:9px;color:${c.text};flex:1">${item}</span>
+      <span style="font-size:9px;color:${c.muted}">${amt}</span>
+    </div>`).join('')}
+    <div style="font-size:9px;font-weight:700;color:${c.muted};text-transform:uppercase;letter-spacing:.1em;margin:10px 0 5px">In Cart</div>
+    ${done.map(([item,amt])=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;margin-bottom:4px;border-radius:10px;background:${c.chip}">
+      <div style="width:16px;height:16px;border-radius:50%;background:${c.secondary};flex-shrink:0;display:flex;align-items:center;justify-content:center">
+        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+      <span style="font-size:9px;color:${c.muted};flex:1;text-decoration:line-through">${item}</span>
+      <span style="font-size:9px;color:${c.muted};text-decoration:line-through">${amt}</span>
+    </div>`).join('')}
+  </div>
+  ${nav(c,3)}</div>`;
+}
+
+function fridgeScreen(c,dark){
+  return`<div style="height:100%;background:${c.bg};position:relative;overflow:hidden">
+  ${sb(c)}
+  <div style="padding:2px 14px 8px">
+    <div style="font-size:16px;font-weight:700;color:${c.text}">Fridge Scanner</div>
+    <div style="font-size:9px;color:${c.muted}">Snap your fridge — we'll find recipes</div>
+  </div>
+  <div style="margin:0 14px 10px;border-radius:14px;height:145px;background:${dark?'#100E0C':'#C8BCB0'};position:relative;display:flex;align-items:center;justify-content:center">
+    <div style="position:absolute;top:10px;left:10px;width:20px;height:20px;border-top:2px solid ${c.primary};border-left:2px solid ${c.primary};border-radius:2px 0 0 0"></div>
+    <div style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-top:2px solid ${c.primary};border-right:2px solid ${c.primary};border-radius:0 2px 0 0"></div>
+    <div style="position:absolute;bottom:10px;left:10px;width:20px;height:20px;border-bottom:2px solid ${c.primary};border-left:2px solid ${c.primary};border-radius:0 0 0 2px"></div>
+    <div style="position:absolute;bottom:10px;right:10px;width:20px;height:20px;border-bottom:2px solid ${c.primary};border-right:2px solid ${c.primary};border-radius:0 0 2px 0"></div>
+    <div style="text-align:center">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="${c.primary}" stroke-width="1.5" style="display:block;margin:0 auto 5px"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      <div style="font-size:9px;color:${dark?'rgba(255,255,255,0.4)':'rgba(0,0,0,0.4)'}">Tap to scan</div>
+    </div>
+  </div>
+  <div style="padding:0 14px">
+    <div style="font-size:10px;font-weight:600;color:${c.text};margin-bottom:6px">Detected ingredients</div>
+    <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px">
+      ${['Eggs','Butter','Milk','Cheddar','Spinach','Chicken'].map(i=>`<span style="font-size:10px;padding:3px 9px;border-radius:100px;background:${c.chip};color:${c.chipTx};border:0.5px solid ${c.border}">${i}</span>`).join('')}
+    </div>
+    <div style="font-size:10px;font-weight:600;color:${c.text};margin-bottom:6px">You can make these</div>
+    ${[['Spinach & Cheddar Omelette','8 min',c.secondary],['Butter Chicken Rice Bowl','25 min',c.primary]].map(([n,t,col])=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;margin-bottom:5px;border-radius:10px;background:${c.card};border:0.5px solid ${c.border}">
+      <div style="width:30px;height:30px;border-radius:8px;background:${c.chip};flex-shrink:0;display:flex;align-items:center;justify-content:center">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${col}" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg>
+      </div>
+      <div style="flex:1"><div style="font-size:9px;font-weight:600;color:${c.text}">${n}</div><div style="font-size:10px;color:${c.muted}">${t}</div></div>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${c.muted}" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    </div>`).join('')}
+  </div>
+  ${nav(c,2)}</div>`;
+}
+
+const screens=[homeScreen,recipeScreen,groceryScreen,(c)=>fridgeScreen(c,c.bg==='#1C1917')];
+let cur=0;
+function render(){document.getElementById('lp').innerHTML='<div class="notch"></div>'+screens[cur](L);document.getElementById('dp').innerHTML='<div class="notch"></div>'+screens[cur](D);}
+function show(i){cur=i;document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('on',i===j));render();}
+render();
+</script>

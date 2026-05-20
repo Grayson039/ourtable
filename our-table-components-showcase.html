@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Our Table — Component Showcase</title>
+<script src="our-table-design-system.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #F5F5F5; color: #1A1A1A; }
+  .page-header { background: #1C1917; padding: 32px 40px; }
+  .page-header h1 { font-size: 28px; font-weight: 800; color: #E8692A; font-family: Georgia, serif; }
+  .page-header p { font-size: 14px; color: rgba(255,255,255,0.5); margin-top: 6px; }
+  .section { padding: 40px; border-bottom: 1px solid #E5E5E5; }
+  .section-title { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #B05040; margin-bottom: 6px; }
+  .section-heading { font-size: 22px; font-weight: 800; color: #1A1A1A; margin-bottom: 24px; }
+  .row { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start; margin-bottom: 20px; }
+  .col { display: flex; flex-direction: column; gap: 12px; }
+  .label { font-size: 11px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+  .swatch { display: inline-flex; flex-direction: column; align-items: center; gap: 6px; }
+  .swatch-box { width: 56px; height: 56px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); }
+  .swatch-name { font-size: 10px; color: #666; font-weight: 600; text-align: center; }
+  .swatch-hex { font-size: 9px; color: #999; }
+
+  /* Phone frame for component previews */
+  .phone-wrap { display: flex; gap: 24px; flex-wrap: wrap; }
+  .phone-col { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .phone-col .label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #999; }
+  .phone-mini { width: 260px; background: #111; border-radius: 36px; padding: 9px; display: inline-block; box-shadow: 0 0 0 1px #2A2A2A, 0 16px 36px rgba(0,0,0,0.2); }
+  .phone-mini-inner { border-radius: 28px; overflow: hidden; position: relative; background: #FAF7F0; }
+
+  /* Component demo panels */
+  .demo-panel { background: white; border-radius: 14px; padding: 20px; border: 1px solid #E8E8E8; }
+  .demo-panel.dark { background: #1C1917; }
+  .demo-panel + .demo-panel { margin-top: 12px; }
+  .demo-label { font-size: 10px; font-weight: 700; color: #B05040; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 14px; border-bottom: 1px solid #F0F0F0; padding-bottom: 8px; }
+  .demo-panel.dark .demo-label { color: #E8692A; border-bottom-color: rgba(255,255,255,0.1); }
+  .component-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+  .component-row:last-child { margin-bottom: 0; }
+
+  code { font-family: 'Menlo', monospace; font-size: 12px; background: #F0F0F0; padding: 2px 6px; border-radius: 4px; color: #B05040; }
+  .code-block { background: #F8F8F8; border: 1px solid #E5E5E5; border-radius: 10px; padding: 16px; font-family: Menlo, monospace; font-size: 12px; line-height: 1.8; color: #333; overflow-x: auto; margin-top: 16px; }
+  .code-block .kw { color: #B05040; font-weight: 700; }
+  .code-block .str { color: #7A8C52; }
+  .code-block .cm { color: #999; font-style: italic; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Our Table — Design System</h1>
+  <p>Component reference · our-table-design-system.js · All components in light &amp; dark mode</p>
+</div>
+
+<!-- ── COLOR TOKENS ─────────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">Tokens</div>
+  <div class="section-heading">Color Palette</div>
+  <div id="swatches"></div>
+</div>
+
+<!-- ── TYPOGRAPHY ──────────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">Tokens</div>
+  <div class="section-heading">Typography</div>
+  <div id="type-scale"></div>
+</div>
+
+<!-- ── STATUS BAR + NOTCH ───────────────────────────────── -->
+<div class="section">
+  <div class="section-title">Chrome</div>
+  <div class="section-heading">Status Bar &amp; Notch</div>
+  <p style="font-size:13px;color:#666;margin-bottom:20px">OT.c.statusBar(theme) — OT.c.statusBarOverlay() — OT.c.notch()</p>
+  <div id="demo-statusbar"></div>
+</div>
+
+<!-- ── NAV BAR ──────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">Chrome</div>
+  <div class="section-heading">Navigation Bar</div>
+  <p style="font-size:13px;color:#666;margin-bottom:20px">OT.c.navBar(theme, activeIdx) — activeIdx: 0=Home, 1=Search, 2=Fridge, 3=List, 4=Me</p>
+  <div id="demo-navbar"></div>
+</div>
+
+<!-- ── BUTTONS ──────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">Components</div>
+  <div class="section-heading">Buttons</div>
+  <p style="font-size:13px;color:#666;margin-bottom:20px">OT.c.btn(theme, label, fn, variant) — variants: primary | secondary | ghost | danger</p>
+  <div id="demo-buttons"></div>
+</div>
+
+<!-- ── INPUTS ───────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">Components</div>
+  <div class="section-heading">Form Inputs</div>
+  <p style="font-size:13px;color:#666;margin-bottom:20px">OT.c.field(theme, id, type, label, placeholder) — OT.c.input(...) — OT.c.inputLabel(...)</p>
+  <div id="demo-inputs"></div>
+</div>
+
+<!-- ── CHIPS ────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">Components</div>
+  <div class="section-heading">Chips &amp; Badges</div>
+  <p style="font-size:13px;color:#666;margin-bottom:20px">OT.c.chip() — OT.c.dietTag() — OT.c.sourceBadge() — OT.c.metaRow()</p>
+  <div id="demo-chips"></div>
+</div>
+
+<!-- ── RECIPE CARDS ─────────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">Components</div>
+  <div class="section-heading">Recipe Cards</div>
+  <p style="font-size:13px;color:#666;margin-bottom:20px">OT.c.recipeCardLarge(theme, recipe) — OT.c.recipeCardSmall(theme, recipe)</p>
+  <div id="demo-cards"></div>
+</div>
+
+<!-- ── LIST ITEMS ───────────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">Components</div>
+  <div class="section-heading">List Items</div>
+  <p style="font-size:13px;color:#666;margin-bottom:20px">OT.c.listItem(theme, item, checked) — OT.c.settingsRow()</p>
+  <div id="demo-list"></div>
+</div>
+
+<!-- ── UTILITY COMPONENTS ───────────────────────────────── -->
+<div class="section">
+  <div class="section-title">Components</div>
+  <div class="section-heading">Utility Components</div>
+  <p style="font-size:13px;color:#666;margin-bottom:20px">progressBar · avatar · stepDots · divider · emptyState · toast · conflictWarning · cookingStepCard</p>
+  <div id="demo-utils"></div>
+</div>
+
+<!-- ── USAGE GUIDE ───────────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">Reference</div>
+  <div class="section-heading">How to use in a prototype</div>
+  <div class="code-block">
+<span class="cm">&lt;!-- 1. Include the design system --&gt;</span>
+&lt;script <span class="kw">src</span>=<span class="str">"our-table-design-system.js"</span>&gt;&lt;/script&gt;
+
+<span class="cm">&lt;!-- 2. Define your screens as functions --&gt;</span>
+&lt;script&gt;
+<span class="kw">var</span> screens = {
+  <span class="str">'welcome'</span>: <span class="kw">function</span>(theme, state) {
+    <span class="kw">var</span> c = OT.c;
+    <span class="kw">return</span> <span class="str">'&lt;div style="height:100%;background:' + theme.bg + '"&gt;'</span>
+      + c.notch()
+      + c.statusBar(theme)
+      + c.btn(theme, <span class="str">'Get Started'</span>, <span class="str">"otGo('home')"</span>, <span class="str">'primary'</span>)
+    + <span class="str">'&lt;/div&gt;'</span>;
+  },
+  <span class="str">'home'</span>: <span class="kw">function</span>(theme, state) { <span class="cm">/* ... */</span> }
+};
+
+<span class="cm">// 3. Wire navigation (this also renders the first screen)</span>
+OT.nav(screens, <span class="str">'welcome'</span>, <span class="str">'phone-screen'</span>, {
+  mainScreens: [<span class="str">'home'</span>, <span class="str">'search'</span>, <span class="str">'fridge'</span>, <span class="str">'list'</span>, <span class="str">'profile'</span>],
+  state: { userName: <span class="str">'Will'</span> }
+});
+&lt;/script&gt;
+
+<span class="cm">&lt;!-- 4. The phone frame --&gt;</span>
+&lt;div <span class="kw">id</span>=<span class="str">"phone-screen"</span> <span class="kw">style</span>=<span class="str">"width:100%;height:100%;position:relative"</span>&gt;&lt;/div&gt;
+  </div>
+</div>
+
+<script>
+// ── Render all component demos ──────────────────────────────
+(function () {
+  var L = OT.L, D = OT.D, c = OT.c;
+  OT.injectAnimations();
+
+  // Helper: two-column light/dark demo
+  function twoCol(lightHtml, darkHtml, label) {
+    return '<div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px">' +
+      '<div><div class="label">Light</div><div class="demo-panel">' + (label ? '<div class="demo-label">' + label + '</div>' : '') + lightHtml + '</div></div>' +
+      '<div><div class="label">Dark</div><div class="demo-panel dark">' + (label ? '<div class="demo-label" style="border-bottom-color:rgba(255,255,255,0.1)">' + label + '</div>' : '') + darkHtml + '</div></div>' +
+    '</div>';
+  }
+
+  // ── COLOR SWATCHES ────────────────────────────────────────
+  var swatchKeys = ['bg','card','primary','secondary','text','muted','border','chip','chipTx','hero','hero2','hero3','success','warning','error'];
+  function makeSwatch(theme, key) {
+    var val = theme[key];
+    return '<div class="swatch"><div class="swatch-box" style="background:' + val + '"></div>' +
+      '<div class="swatch-name">' + key + '</div>' +
+      '<div class="swatch-hex">' + val + '</div></div>';
+  }
+  var swL = '<div style="display:flex;flex-wrap:wrap;gap:12px">' + swatchKeys.map(function(k){ return makeSwatch(L,k); }).join('') + '</div>';
+  var swD = '<div style="display:flex;flex-wrap:wrap;gap:12px">' + swatchKeys.map(function(k){ return makeSwatch(D,k); }).join('') + '</div>';
+  document.getElementById('swatches').innerHTML = twoCol(swL, swD);
+
+  // ── TYPOGRAPHY ────────────────────────────────────────────
+  var T = OT.T;
+  var typeHtml = Object.keys(T.sz).map(function(key) {
+    return '<div style="display:flex;align-items:baseline;gap:14px;padding:6px 0;border-bottom:1px solid #F0F0F0">' +
+      '<code style="width:40px;flex-shrink:0">' + key + '</code>' +
+      '<span style="width:40px;font-size:11px;color:#999;flex-shrink:0">' + T.sz[key] + '</span>' +
+      '<span style="font-size:' + T.sz[key] + ';font-weight:600;color:#2C2416">Our Table — Recipe App</span>' +
+    '</div>';
+  }).join('');
+  document.getElementById('type-scale').innerHTML = '<div class="demo-panel">' + typeHtml + '</div>';
+
+  // ── STATUS BAR ────────────────────────────────────────────
+  document.getElementById('demo-statusbar').innerHTML = twoCol(
+    c.statusBar(L),
+    c.statusBar(D)
+  );
+
+  // ── NAV BAR ──────────────────────────────────────────────
+  var navDemo = '';
+  for (var i = 0; i < 5; i++) {
+    navDemo += '<div style="margin-bottom:12px">' +
+      twoCol(
+        '<div style="position:relative;height:70px">' + c.navBar(L, i, 'void') + '</div>',
+        '<div style="position:relative;height:70px">' + c.navBar(D, i, 'void') + '</div>',
+        ['Home', 'Search', 'Fridge', 'List', 'Me'][i] + ' active'
+      ) + '</div>';
+  }
+  document.getElementById('demo-navbar').innerHTML = navDemo;
+
+  // ── BUTTONS ──────────────────────────────────────────────
+  var variants = ['primary','secondary','ghost','danger'];
+  var btnL = variants.map(function(v){ return '<div style="margin-bottom:8px">' + c.btn(L, v.charAt(0).toUpperCase()+v.slice(1), 'void(0)', v) + '</div>'; }).join('');
+  var btnD = variants.map(function(v){ return '<div style="margin-bottom:8px">' + c.btn(D, v.charAt(0).toUpperCase()+v.slice(1), 'void(0)', v) + '</div>'; }).join('');
+  var btnSmL = ['primary','secondary'].map(function(v){ return c.btnSmall(L, 'Small ' + v, 'void(0)', v); }).join(' ');
+  var btnSmD = ['primary','secondary'].map(function(v){ return c.btnSmall(D, 'Small ' + v, 'void(0)', v); }).join(' ');
+  var bkL = c.backBtn(L, 'Back', 'void(0)');
+  var bkD = c.backBtn(D, 'Back', 'void(0)');
+  document.getElementById('demo-buttons').innerHTML =
+    twoCol(btnL + '<div style="margin-top:12px">' + btnSmL + '</div><div style="margin-top:12px">' + bkL + '</div>',
+           btnD + '<div style="margin-top:12px">' + btnSmD + '</div><div style="margin-top:12px">' + bkD + '</div>');
+
+  // ── INPUTS ───────────────────────────────────────────────
+  var inpL = c.field(L,'l1','email','Email','your@email.com','') + '<div style="height:10px"></div>' +
+    c.field(L,'l2','password','Password','Enter password','') + '<div style="height:10px"></div>' +
+    c.field(L,'l3','text','Name','First name','Will');
+  var inpD = c.field(D,'d1','email','Email','your@email.com','') + '<div style="height:10px"></div>' +
+    c.field(D,'d2','password','Password','Enter password','') + '<div style="height:10px"></div>' +
+    c.field(D,'d3','text','Name','First name','Will');
+  document.getElementById('demo-inputs').innerHTML = twoCol(inpL, inpD);
+
+  // ── CHIPS ────────────────────────────────────────────────
+  var filters = ['All','Quick','Italian','Asian','Vegetarian'];
+  var chipsL = '<div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px">' +
+    filters.map(function(f,i){ return c.chip(L,f,i===0,'void(0)'); }).join('') + '</div>' +
+    '<div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px">' +
+    ['Vegetarian','Vegan','Gluten-Free','Dairy-Free'].map(function(d,i){ return c.dietTag(L,d,i===0||i===2,'void(0)'); }).join('') + '</div>' +
+    '<div style="margin-bottom:12px">' + c.sourceBadge(L,'TikTok') + ' &nbsp;' + c.sourceBadge(L,'Instagram') + '</div>' +
+    c.metaRow(L,['⏱ 25 min','👥 2 servings','Medium']);
+  var chipsD = '<div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px">' +
+    filters.map(function(f,i){ return c.chip(D,f,i===0,'void(0)'); }).join('') + '</div>' +
+    '<div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px">' +
+    ['Vegetarian','Vegan','Gluten-Free','Dairy-Free'].map(function(d,i){ return c.dietTag(D,d,i===0||i===2,'void(0)'); }).join('') + '</div>' +
+    '<div style="margin-bottom:12px">' + c.sourceBadge(D,'TikTok') + ' &nbsp;' + c.sourceBadge(D,'Instagram') + '</div>' +
+    c.metaRow(D,['⏱ 25 min','👥 2 servings','Medium']);
+  document.getElementById('demo-chips').innerHTML = twoCol(chipsL, chipsD);
+
+  // ── RECIPE CARDS ─────────────────────────────────────────
+  var r1 = { title: 'Spaghetti Carbonara', time: '25 min', rating: '4.8', difficulty: 'Medium', source: 'TikTok' };
+  var r2 = { title: 'Thai Green Curry', time: '32 min', heroColor: L.hero2 };
+  var r3 = { title: 'Avocado Toast', time: '12 min', heroColor: L.hero3 };
+  var cardsL = '<div style="margin-bottom:12px">' + c.recipeCardLarge(L, r1, 'void(0)') + '</div>' +
+    '<div style="display:flex;gap:10px">' + c.recipeCardSmall(L, r2, 'void(0)') + c.recipeCardSmall(L, r3, 'void(0)') + '</div>';
+  var r1d = { title: 'Spaghetti Carbonara', time: '25 min', rating: '4.8', difficulty: 'Medium', source: 'TikTok', heroColor: D.hero };
+  var r2d = { title: 'Thai Green Curry', time: '32 min', heroColor: D.hero2 };
+  var r3d = { title: 'Avocado Toast', time: '12 min', heroColor: D.hero3 };
+  var cardsD = '<div style="margin-bottom:12px">' + c.recipeCardLarge(D, r1d, 'void(0)') + '</div>' +
+    '<div style="display:flex;gap:10px">' + c.recipeCardSmall(D, r2d, 'void(0)') + c.recipeCardSmall(D, r3d, 'void(0)') + '</div>';
+  document.getElementById('demo-cards').innerHTML = twoCol(cardsL, cardsD);
+
+  // ── LIST ITEMS ───────────────────────────────────────────
+  var items = [
+    { label: 'Spaghetti', qty: '200g' },
+    { label: 'Pancetta', qty: '100g' },
+    { label: 'Eggs', qty: '3 large' }
+  ];
+  var listL = items.map(function(it,i){ return c.listItem(L,it,i===2,'void(0)'); }).join('') +
+    '<div style="height:16px"></div>' +
+    c.settingsRow(L,'🔔','Notifications','On','void(0)') +
+    c.settingsRow(L,'👨‍👩‍👧','Household','3 members','void(0)') +
+    c.settingsRow(L,'💳','Subscription','Plus','void(0)');
+  var listD = items.map(function(it,i){ return c.listItem(D,it,i===2,'void(0)'); }).join('') +
+    '<div style="height:16px"></div>' +
+    c.settingsRow(D,'🔔','Notifications','On','void(0)') +
+    c.settingsRow(D,'👨‍👩‍👧','Household','3 members','void(0)') +
+    c.settingsRow(D,'💳','Subscription','Plus','void(0)');
+  document.getElementById('demo-list').innerHTML = twoCol(listL, listD);
+
+  // ── UTILITIES ────────────────────────────────────────────
+  var step = { number: '03', title: 'Whisk the egg mix', body: 'Whisk eggs, parmesan, and black pepper until smooth.', time: '2 min', icon: '🥚' };
+  var utilL =
+    '<div class="label">Progress Bar (2/6)</div>' +
+    c.progressBar(L, 2, 6) +
+    '<div style="height:16px"></div>' +
+    '<div class="label">Avatars</div>' +
+    '<div style="display:flex;gap:8px">' +
+      c.avatar(L,'WG',null,'44px') +
+      c.avatar(L,'S',null,'44px') +
+      c.avatar(L,'A',null,'44px') +
+    '</div>' +
+    '<div style="height:16px"></div>' +
+    '<div class="label">Step Dots (step 2 of 4)</div>' +
+    c.stepDots(L, 1, 4) +
+    '<div style="height:16px"></div>' +
+    '<div class="label">Divider</div>' +
+    c.divider(L) +
+    c.divider(L, 'or') +
+    '<div style="height:16px"></div>' +
+    '<div class="label">Conflict Warning</div>' +
+    c.conflictWarning(L, 'Sarah', 'Parmesan', 'Nutritional yeast', 'void(0)') +
+    '<div style="height:16px"></div>' +
+    '<div class="label">Empty State</div>' +
+    c.emptyState(L,'🥗','No recipes yet','Import from TikTok, Instagram, or any food blog');
+
+  var utilD =
+    '<div class="label" style="color:#E8692A">Progress Bar (2/6)</div>' +
+    c.progressBar(D, 2, 6) +
+    '<div style="height:16px"></div>' +
+    '<div class="label" style="color:#E8692A">Avatars</div>' +
+    '<div style="display:flex;gap:8px">' +
+      c.avatar(D,'WG',null,'44px') +
+      c.avatar(D,'S',null,'44px') +
+      c.avatar(D,'A',null,'44px') +
+    '</div>' +
+    '<div style="height:16px"></div>' +
+    '<div class="label" style="color:#E8692A">Step Dots (step 2 of 4)</div>' +
+    c.stepDots(D, 1, 4) +
+    '<div style="height:16px"></div>' +
+    '<div class="label" style="color:#E8692A">Divider</div>' +
+    c.divider(D) +
+    c.divider(D, 'or') +
+    '<div style="height:16px"></div>' +
+    '<div class="label" style="color:#E8692A">Conflict Warning</div>' +
+    c.conflictWarning(D, 'Sarah', 'Parmesan', 'Nutritional yeast', 'void(0)') +
+    '<div style="height:16px"></div>' +
+    '<div class="label" style="color:#E8692A">Empty State</div>' +
+    c.emptyState(D,'🥗','No recipes yet','Import from TikTok, Instagram, or any food blog');
+
+  document.getElementById('demo-utils').innerHTML =
+    twoCol(utilL, utilD) +
+    '<div><div class="label">Cooking Step Card (Light)</div><div class="demo-panel" style="max-width:400px">' + c.cookingStepCard(L, step) + '</div></div>';
+
+})();
+</script>
+</body>
+</html>

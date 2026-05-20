@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a1a18" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Cookbook" />
+  <meta name="description" content="Your personal AI-powered recipe cookbook" />
+
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <title>My Cookbook</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div id="app">
+
+  <!-- HEADER -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="header-brand">
+        <span class="header-icon">🍳</span>
+        <div>
+          <h1 class="header-title">My Cookbook</h1>
+          <p class="header-sub" id="header-sub">Loading...</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- NAV -->
+  <nav class="bottom-nav" id="bottom-nav">
+    <button class="nav-item active" data-view="add" onclick="showView('add')">
+      <span class="nav-icon">＋</span>
+      <span class="nav-label">Add</span>
+    </button>
+    <button class="nav-item" data-view="cookbook" onclick="showView('cookbook')">
+      <span class="nav-icon">📖</span>
+      <span class="nav-label">Recipes</span>
+      <span class="nav-badge" id="cnt-cookbook" style="display:none">0</span>
+    </button>
+    <button class="nav-item" data-view="planner" onclick="showView('planner')">
+      <span class="nav-icon">📅</span>
+      <span class="nav-label">Planner</span>
+    </button>
+    <button class="nav-item" data-view="grocery" onclick="showView('grocery')">
+      <span class="nav-icon">🛒</span>
+      <span class="nav-label">Grocery</span>
+      <span class="nav-badge" id="cnt-grocery" style="display:none">0</span>
+    </button>
+  </nav>
+
+  <!-- ── ADD VIEW ── -->
+  <main class="view active" id="view-add">
+    <div class="upload-area" id="drop-zone" onclick="document.getElementById('file-input').click()">
+      <input type="file" id="file-input" accept="image/*" multiple />
+      <div class="upload-graphic">📸</div>
+      <p class="upload-title">Drop a screenshot here</p>
+      <p class="upload-sub">or tap to pick from your camera roll</p>
+    </div>
+    <div class="api-key-section" id="api-key-section">
+      <p class="api-label">Anthropic API key</p>
+      <div class="api-row">
+        <input type="password" id="api-key-input" placeholder="sk-ant-..." class="api-input" />
+        <button class="api-save-btn" onclick="saveApiKey()">Save</button>
+      </div>
+      <p class="api-hint">Your key is stored locally on your device only. <a href="https://console.anthropic.com/keys" target="_blank">Get a key →</a></p>
+    </div>
+  </main>
+
+  <!-- ── COOKBOOK VIEW ── -->
+  <main class="view" id="view-cookbook">
+    <div class="search-wrap">
+      <input class="search-input" type="search" id="search-input" placeholder="Search recipes, ingredients…" oninput="renderGrid()" />
+    </div>
+    <div id="recipe-grid" class="recipe-grid"></div>
+    <div id="empty-cookbook" class="empty-state" style="display:none">
+      <div class="empty-icon">📖</div>
+      <p>No recipes yet.<br>Add one from the + tab!</p>
+    </div>
+    <div id="empty-search" class="empty-state" style="display:none">
+      <div class="empty-icon">🔍</div>
+      <p>No recipes match your search.</p>
+    </div>
+  </main>
+
+  <!-- ── PLANNER VIEW ── -->
+  <main class="view" id="view-planner">
+    <div class="planner-actions">
+      <button class="pill-btn green" onclick="buildGroceryFromPlan()">🛒 Build grocery list</button>
+      <button class="pill-btn ghost" onclick="clearPlan()">Clear week</button>
+    </div>
+    <div id="week-grid" class="week-grid"></div>
+  </main>
+
+  <!-- ── GROCERY VIEW ── -->
+  <main class="view" id="view-grocery">
+    <div class="grocery-toolbar">
+      <span class="grocery-summary" id="grocery-summary">0 items</span>
+      <div class="grocery-actions">
+        <button class="pill-btn ghost small" onclick="clearCheckedGrocery()">Remove checked</button>
+        <button class="pill-btn danger small" onclick="clearAllGrocery()">Clear all</button>
+      </div>
+    </div>
+    <div id="grocery-list-area"></div>
+    <div id="empty-grocery" class="empty-state">
+      <div class="empty-icon">🛒</div>
+      <p>Your grocery list is empty.<br>Add from a recipe or meal plan.</p>
+    </div>
+  </main>
+
+  <!-- MODAL CONTAINER -->
+  <div id="modal-root"></div>
+
+  <!-- LOADING OVERLAY -->
+  <div id="loading-overlay" class="loading-overlay" style="display:none">
+    <div class="loading-card">
+      <div class="dot-loader"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+      <p id="loading-msg">Reading your screenshot…</p>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast" style="display:none"></div>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
