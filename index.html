@@ -6,258 +6,67 @@
 <title>OurTable — Interactive Prototype</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: #1C1917;
-    min-height: 100vh;
-    color: #FAF7F0;
-  }
-
-  /* Header */
-  .header {
-    background: #2E2A27;
-    border-bottom: 1px solid rgba(255,240,220,0.1);
-    padding: 16px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  .header-logo {
-    font-family: 'Playfair Display', serif;
-    font-size: 22px;
-    font-weight: 800;
-    color: #B05040;
-  }
-  .header-logo span { color: #FAF7F0; }
-  .header-tag {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: #8A7060;
-    background: rgba(176,80,64,0.12);
-    border: 1px solid rgba(176,80,64,0.2);
-    padding: 4px 12px;
-    border-radius: 100px;
-  }
-
-  /* Main layout */
-  .main {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 40px 24px;
-  }
-
-  .intro {
-    text-align: center;
-    margin-bottom: 48px;
-  }
-  .intro h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 36px;
-    font-weight: 800;
-    color: #FAF7F0;
-    margin-bottom: 12px;
-    line-height: 1.2;
-  }
-  .intro h1 em {
-    color: #B05040;
-    font-style: normal;
-  }
-  .intro p {
-    font-size: 15px;
-    color: #8A7060;
-    line-height: 1.7;
-    max-width: 520px;
-    margin: 0 auto 24px;
-  }
-  .intro-stats {
-    display: flex;
-    gap: 24px;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-  .stat {
-    text-align: center;
-  }
-  .stat-num {
-    font-size: 28px;
-    font-weight: 800;
-    color: #B05040;
-    font-family: 'Playfair Display', serif;
-  }
-  .stat-label {
-    font-size: 11px;
-    color: #8A7060;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-  }
-
-  /* Section grid */
-  .section-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 16px;
-    margin-bottom: 48px;
-  }
-
-  .section-card {
-    background: #2E2A27;
-    border: 1px solid rgba(255,240,220,0.08);
-    border-radius: 16px;
-    overflow: hidden;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-decoration: none;
-    display: block;
-  }
-  .section-card:hover {
-    border-color: rgba(176,80,64,0.4);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-  }
-
-  .section-preview {
-    height: 140px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 52px;
-    position: relative;
-  }
-  .section-preview.auth    { background: linear-gradient(135deg, #3A2220, #4A2A28); }
-  .section-preview.home    { background: linear-gradient(135deg, #2A3820, #3A4A28); }
-  .section-preview.recipe  { background: linear-gradient(135deg, #2A2038, #3A2848); }
-  .section-preview.add     { background: linear-gradient(135deg, #382820, #4A3428); }
-  .section-preview.fridge  { background: linear-gradient(135deg, #20303A, #283848); }
-  .section-preview.grocery { background: linear-gradient(135deg, #203828, #283830); }
-  .section-preview.profile { background: linear-gradient(135deg, #383020, #4A3C28); }
-  .section-preview.book    { background: linear-gradient(135deg, #302038, #402848); }
-
-  .section-info {
-    padding: 16px;
-  }
-  .section-title {
-    font-size: 15px;
-    font-weight: 700;
-    color: #FAF7F0;
-    margin-bottom: 4px;
-  }
-  .section-desc {
-    font-size: 12px;
-    color: #8A7060;
-    line-height: 1.5;
-    margin-bottom: 12px;
-  }
-  .section-screens {
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-    color: rgba(176,80,64,0.8);
-  }
-
-  .open-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(176,80,64,0.15);
-    border: 1px solid rgba(176,80,64,0.3);
-    color: #E88060;
-    font-size: 12px;
-    font-weight: 600;
-    padding: 7px 14px;
-    border-radius: 100px;
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    transition: all 0.15s;
-    text-decoration: none;
-  }
-  .open-btn:hover {
-    background: rgba(176,80,64,0.25);
-    border-color: rgba(176,80,64,0.5);
-  }
-
-  /* Flow section */
-  .flow-section {
-    background: #2E2A27;
-    border: 1px solid rgba(255,240,220,0.08);
-    border-radius: 20px;
-    padding: 32px;
-    margin-bottom: 32px;
-  }
-  .flow-title {
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-    color: #8A7060;
-    margin-bottom: 20px;
-  }
-  .flow-path {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-  .flow-step {
-    background: rgba(176,80,64,0.12);
-    border: 1px solid rgba(176,80,64,0.2);
-    border-radius: 8px;
-    padding: 8px 14px;
-    font-size: 12px;
-    font-weight: 600;
-    color: #E88060;
-    text-decoration: none;
-    transition: all 0.15s;
-  }
-  .flow-step:hover {
-    background: rgba(176,80,64,0.22);
-  }
-  .flow-arrow {
-    color: #8A7060;
-    font-size: 14px;
-  }
-
-  /* Footer */
-  .footer {
-    text-align: center;
-    padding: 32px;
-    font-size: 12px;
-    color: #8A7060;
-    border-top: 1px solid rgba(255,240,220,0.06);
-  }
-  .footer strong { color: #B05040; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: #FAF7F0; min-height: 100vh; color: #1A1208; }
+.header { background: #1B3A5C; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 16px rgba(27,58,92,0.18); }
+.header-logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 800; color: #FAF7F0; }
+.header-logo span { color: #E8A84A; }
+.header-tag { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.18); padding: 4px 12px; border-radius: 100px; }
+.main { max-width: 1100px; margin: 0 auto; padding: 48px 24px; }
+.intro { text-align: center; margin-bottom: 48px; }
+.intro h1 { font-family: 'Playfair Display', serif; font-size: 38px; font-weight: 800; color: #1B3A5C; margin-bottom: 12px; line-height: 1.2; }
+.intro h1 em { color: #E8A84A; font-style: normal; }
+.intro p { font-size: 15px; color: #7A6E62; line-height: 1.7; max-width: 520px; margin: 0 auto 28px; }
+.intro-stats { display: flex; gap: 32px; justify-content: center; flex-wrap: wrap; }
+.stat { text-align: center; }
+.stat-num { font-size: 30px; font-weight: 800; color: #1B3A5C; font-family: 'Playfair Display', serif; line-height: 1; margin-bottom: 4px; }
+.stat-label { font-size: 11px; color: #7A6E62; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+.flow-section { background: #FFFFFF; border: 1px solid rgba(27,58,92,0.10); border-radius: 20px; padding: 28px 32px; margin-bottom: 32px; box-shadow: 0 2px 12px rgba(27,58,92,0.06); }
+.flow-title { font-size: 11px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: #7A6E62; margin-bottom: 16px; }
+.flow-path { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.flow-step { background: rgba(27,58,92,0.06); border: 1.5px solid rgba(27,58,92,0.15); border-radius: 8px; padding: 7px 14px; font-size: 12px; font-weight: 600; color: #1B3A5C; text-decoration: none; transition: all 0.15s; }
+.flow-step:hover { background: #1B3A5C; color: white; border-color: #1B3A5C; }
+.flow-arrow { color: #E8A84A; font-size: 16px; font-weight: 700; }
+.section-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-bottom: 48px; }
+.section-card { background: #FFFFFF; border: 1px solid rgba(27,58,92,0.10); border-radius: 18px; overflow: hidden; cursor: pointer; transition: all 0.2s; text-decoration: none; display: block; box-shadow: 0 2px 8px rgba(27,58,92,0.06); }
+.section-card:hover { border-color: rgba(232,168,74,0.5); transform: translateY(-3px); box-shadow: 0 10px 28px rgba(27,58,92,0.12); }
+.section-preview { height: 140px; display: flex; align-items: center; justify-content: center; font-size: 52px; position: relative; }
+.section-preview.auth    { background: linear-gradient(135deg, #1B3A5C 0%, #0F2840 100%); }
+.section-preview.home    { background: linear-gradient(135deg, #2A4E74 0%, #1B3A5C 100%); }
+.section-preview.recipe  { background: linear-gradient(135deg, #E8A84A 0%, #C8843A 100%); }
+.section-preview.add     { background: linear-gradient(135deg, #1B3A5C 0%, #2A5070 100%); }
+.section-preview.fridge  { background: linear-gradient(135deg, #3A5878 0%, #1B3A5C 100%); }
+.section-preview.grocery { background: linear-gradient(135deg, #E8A84A 0%, #D49030 100%); }
+.section-preview.profile { background: linear-gradient(135deg, #1B3A5C 0%, #142C46 100%); }
+.section-preview.recipe::after, .section-preview.grocery::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 70% 30%, rgba(255,255,255,0.12) 0%, transparent 60%); pointer-events: none; }
+.section-info { padding: 18px 16px 16px; }
+.section-title { font-size: 15px; font-weight: 700; color: #1A1208; margin-bottom: 5px; }
+.section-desc { font-size: 12px; color: #7A6E62; line-height: 1.55; margin-bottom: 12px; }
+.section-screens { font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: #E8A84A; }
+.footer { text-align: center; padding: 32px; font-size: 12px; color: #7A6E62; border-top: 1px solid rgba(27,58,92,0.08); }
+.footer strong { color: #1B3A5C; }
+.footer a { color: #E8A84A; text-decoration: none; font-weight: 600; }
+.footer a:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
-
 <div class="header">
   <div class="header-logo">Our<span>Table</span></div>
-  <div class="header-tag">Interactive Prototype · v2.1</div>
+  <div class="header-tag">Interactive Prototype · v3.0</div>
 </div>
-
 <div class="main">
-
   <div class="intro">
     <h1>Family Kitchen <em>Platform</em></h1>
     <p>A household meal intelligence app built from a real problem. Save recipes, scan your fridge, cook for everyone at your table.</p>
     <div class="intro-stats">
-      <div class="stat"><div class="stat-num">8</div><div class="stat-label">Screen Sections</div></div>
-      <div class="stat"><div class="stat-num">49</div><div class="stat-label">Interactive Screens</div></div>
-      <div class="stat"><div class="stat-num">4</div><div class="stat-label">Design Versions</div></div>
+      <div class="stat"><div class="stat-num">7</div><div class="stat-label">Screen Sections</div></div>
+      <div class="stat"><div class="stat-num">18</div><div class="stat-label">Live Screens</div></div>
+      <div class="stat"><div class="stat-num">2</div><div class="stat-label">Themes</div></div>
       <div class="stat"><div class="stat-num">1</div><div class="stat-label">Real Family Problem</div></div>
     </div>
   </div>
-
-  <!-- Suggested User Flow -->
   <div class="flow-section">
-    <div class="flow-title">Suggested Flow → Start Here</div>
+    <div class="flow-title">Suggested Flow — Start Here</div>
     <div class="flow-path">
       <a href="01-auth-onboarding.html" class="flow-step">1. Onboarding</a>
       <span class="flow-arrow">→</span>
@@ -265,21 +74,16 @@
       <span class="flow-arrow">→</span>
       <a href="03-recipe-detail.html" class="flow-step">3. Recipe Detail</a>
       <span class="flow-arrow">→</span>
-      <a href="04-add-recipe.html" class="flow-step">4. Add from TikTok</a>
+      <a href="04-add-recipe.html" class="flow-step">4. Add Recipe</a>
       <span class="flow-arrow">→</span>
       <a href="05-fridge-pantry.html" class="flow-step">5. Fridge Scan</a>
       <span class="flow-arrow">→</span>
       <a href="06-grocery-list.html" class="flow-step">6. Grocery List</a>
       <span class="flow-arrow">→</span>
-      <a href="08-recipe-book.html" class="flow-step">7. Family Recipe Book</a>
-      <span class="flow-arrow">→</span>
-      <a href="07-profile-settings.html" class="flow-step">8. Household & Settings</a>
+      <a href="07-profile-settings.html" class="flow-step">7. Profile & Settings</a>
     </div>
   </div>
-
-  <!-- Section Cards -->
   <div class="section-grid">
-
     <a href="01-auth-onboarding.html" class="section-card">
       <div class="section-preview auth">🔐</div>
       <div class="section-info">
@@ -288,78 +92,59 @@
         <div class="section-screens">6 screens · Start here</div>
       </div>
     </a>
-
     <a href="02-home-search-library.html" class="section-card">
       <div class="section-preview home">🏠</div>
       <div class="section-info">
         <div class="section-title">Home, Search & Library</div>
         <div class="section-desc">Personalized feed, recipe search, saved recipe library organized by category.</div>
-        <div class="section-screens">8 screens</div>
+        <div class="section-screens">4 screens</div>
       </div>
     </a>
-
     <a href="03-recipe-detail.html" class="section-card">
       <div class="section-preview recipe">🍳</div>
       <div class="section-info">
-        <div class="section-title">Recipe Detail & Cooking Mode</div>
-        <div class="section-desc">Full recipe view with nutrition, cost per meal, dietary conflict warnings, step-by-step cooking mode.</div>
-        <div class="section-screens">4 screens · AI conflict detection</div>
+        <div class="section-title">Recipe Detail</div>
+        <div class="section-desc">Full recipe view with nutrition, dietary conflict warnings, servings adjuster, and 5-star rating.</div>
+        <div class="section-screens">2 screens · Conflict detection</div>
       </div>
     </a>
-
     <a href="04-add-recipe.html" class="section-card">
       <div class="section-preview add">➕</div>
       <div class="section-info">
         <div class="section-title">Add Recipe</div>
-        <div class="section-desc">Import from TikTok, Instagram, URL, or any food blog. Manual entry option. AI parsing from social media screenshots.</div>
-        <div class="section-screens">10 screens · AI-powered import</div>
+        <div class="section-desc">Import from TikTok, Instagram, URL, or any food blog. Manual 4-step entry form.</div>
+        <div class="section-screens">2 screens</div>
       </div>
     </a>
-
     <a href="05-fridge-pantry.html" class="section-card">
       <div class="section-preview fridge">🧊</div>
       <div class="section-info">
         <div class="section-title">Fridge & Pantry</div>
-        <div class="section-desc">Scan your fridge with AI to catalog ingredients. "What Can I Make?" with match %. Food Waste Mode.</div>
-        <div class="section-screens">6 screens · Fridge scanner</div>
+        <div class="section-desc">Live fridge/pantry/freezer tracking. "What Can I Make?" match engine.</div>
+        <div class="section-screens">2 screens · Fridge scanner</div>
       </div>
     </a>
-
     <a href="06-grocery-list.html" class="section-card">
       <div class="section-preview grocery">🛒</div>
       <div class="section-info">
         <div class="section-title">Grocery List</div>
-        <div class="section-desc">Smart list organized by aisle. Add entire recipes with one tap. Track progress. Check off as you shop.</div>
-        <div class="section-screens">4 screens · Aisle-organized</div>
+        <div class="section-desc">Shared household list with real-time checkbox sync across all members.</div>
+        <div class="section-screens">1 screen · Realtime sync</div>
       </div>
     </a>
-
     <a href="07-profile-settings.html" class="section-card">
       <div class="section-preview profile">👤</div>
       <div class="section-info">
         <div class="section-title">Profile & Settings</div>
-        <div class="section-desc">Household dashboard, member management, dietary preferences, subscription plans, cooking stats.</div>
-        <div class="section-screens">7 screens · Household system</div>
+        <div class="section-desc">Household dashboard, member management, dietary preferences, sign out.</div>
+        <div class="section-screens">1 screen · Household system</div>
       </div>
     </a>
-
-    <a href="08-recipe-book.html" class="section-card">
-      <div class="section-preview book">📖</div>
-      <div class="section-info">
-        <div class="section-title">Family Recipe Book</div>
-        <div class="section-desc">"Collected with love since 2024." Organized chapters, Party Mode with auto-scaling, print & export.</div>
-        <div class="section-screens">5 screens · Party Mode ✨</div>
-      </div>
-    </a>
-
   </div>
-
 </div>
-
 <div class="footer">
-  Built by <strong>Will Grayson</strong> · OurTable v2.1.0 · Family Kitchen Platform · 
-  <a href="https://grayson039.github.io" style="color:#B05040;text-decoration:none;">Portfolio →</a>
+  Built by <strong>Will Grayson</strong> · OurTable v3.0 · Full-Stack Build Phase 5 Complete ·
+  <a href="https://grayson039.github.io/our-table-case-study.html">Case Study →</a>
 </div>
-
 </body>
 </html>
