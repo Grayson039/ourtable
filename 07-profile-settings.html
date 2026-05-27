@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Our Table — Profile & Settings</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #EDE8E2; min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 40px 20px;
+  }
+  .phone-outer { position: relative; filter: drop-shadow(0 28px 56px rgba(0,0,0,0.26)); }
+  .side-l { position:absolute;left:-4px;top:108px;width:4px;height:32px;background:#1A1A1A;border-radius:4px 0 0 4px;box-shadow:0 46px 0 #1A1A1A; }
+  .side-r { position:absolute;right:-4px;top:130px;width:4px;height:64px;background:#1A1A1A;border-radius:0 4px 4px 0; }
+  .phone-body { width:370px;height:760px;background:#0D0D0D;border-radius:54px;padding:12px;border:1px solid #1A1A1A;box-shadow:inset 0 1px 1px rgba(255,255,255,0.07),inset 0 -1px 0 rgba(0,0,0,0.5); }
+  #phone-screen { width:100%;height:100%;border-radius:44px;overflow:hidden;position:relative; }
+  .controls { text-align:center;margin-top:24px; }
+  #screen-label { font-size:11px;font-weight:700;color:#8A7060;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px; }
+  .hint { font-size:11px;color:#B0A090;margin-bottom:14px; }
+  #screen-dots { display:flex;gap:7px;align-items:center;justify-content:center;margin-bottom:14px; }
+  #screen-dots .dot { width:7px;height:7px;border-radius:50%;background:#C8B8A8;transition:all 0.2s; }
+  #screen-dots .dot.on { width:22px;border-radius:4px;background:#1B3A5C; }
+  .theme-btn { background:rgba(0,0,0,0.07);border:1.5px solid rgba(0,0,0,0.14);color:#2C2416;font-size:12px;font-weight:600;padding:8px 20px;border-radius:100px;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px; }
+</style>
+</head>
+<body>
+
+<div class="phone-outer">
+  <div class="side-l"></div>
+  <div class="side-r"></div>
+  <div class="phone-body">
+    <div id="phone-screen"></div>
+  </div>
+</div>
+
+<div class="controls">
+  <div id="screen-label">Profile</div>
+  <div class="hint">Tap members, settings rows, or upgrade to explore</div>
+  <div id="screen-dots"></div>
+  <button class="theme-btn" id="theme-btn" onclick="otToggleTheme()">☾ Dark Mode</button>
+</div>
+
+<script src="./our-table-design-system.js"></script>
+<script>
+(function () {
+  var T = OT.T, S = OT.S, R = OT.R, c = OT.c;
+
+  var SCREEN_NAMES = {
+    profile:        'Profile',
+    householdDash:  'My Household',
+    memberDetail:   'Member',
+    appSettings:    'Settings',
+    notifications:  'Notifications',
+    subscription:   'Our Table Plus',
+    editProfile:    'Edit Profile'
+  };
+
+  var HOUSEHOLD = {
+    name: 'The Wilson Family',
+    plan: 'Household',
+    members: [
+      { name:'Will',  initials:'W',  color:'#1B3A5C', role:'Admin',     dietary:['None'],        recipes:42, cooked:18 },
+      { name:'Emma',  initials:'E',  color:'#E8A84A', role:'Member',    dietary:['Dairy-Free'],  recipes:12, cooked:8  },
+      { name:'Lily',  initials:'L',  color:'#3A6898', role:'Member',    dietary:['None'],        recipes:6,  cooked:3  }
+    ]
+  };
+
+  var ME = HOUSEHOLD.members[0];
+
+  /* ══════════════════════════════════════════════════════════
+     HELPERS
+  ══════════════════════════════════════════════════════════ */
+  function iconSvg(path, size, color, sw) {
+    return '<svg width="'+(size||20)+'" height="'+(size||20)+'" viewBox="0 0 24 24" fill="none" '+
+      'stroke="'+(color||'currentColor')+'" stroke-width="'+(sw||'1.8')+'" '+
+      'stroke-linecap="round" stroke-linejoin="round"><path d="'+path+'"/></svg>';
+  }
+
+  function statPill(th, label, val, color) {
+    return '<div style="flex:1;background:'+th.card+';border:0.5px solid '+th.border+';'+
+      'border-radius:'+R.md+';padding:12px;text-align:center">' +
+      '<div style="font-size:20px;font-weight:'+T.wt.heavy+';color:'+(color||th.text)+'">'+val+'</div>' +
+      '<div style="font-size:10px;color:'+th.muted+';margin-top:3px">'+label+'</div>' +
+    '</div>';
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     SCREENS
+  ══════════════════════════════════════════════════════════ */
+
+  /* ── 1. PROFILE (Me tab) ────────────────────────────────── */
+  function sProfile(th) {
+    return '<div style="height:100%;background:'+th.bg+';display:flex;flex-direction:column;'+
+      'position:relative;font-family:'+T.sans+'">' +
+
+      c.notch() + c.statusBar(th) +
+
+      '<div style="flex:1;overflow-y:auto;padding-bottom:90px;scrollbar-width:none">' +
+
+        /* Profile hero */
+        '<div style="padding:16px '+S.xl+' 20px;background:'+th.card+';'+
+          'border-bottom:0.5px solid '+th.border+'">' +
+          '<div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">' +
+            /* Avatar */
+            '<div style="position:relative">' +
+              c.avatar(th, ME.initials, null, '64px') +
+              '<div onclick="otGo(\'editProfile\')" style="position:absolute;bottom:-2px;right:-2px;'+
+                'width:22px;height:22px;border-radius:50%;background:'+th.primary+';'+
+                'display:flex;align-items:center;justify-content:center;cursor:pointer;'+
+                'border:2px solid '+th.card+'">' +
+                iconSvg('M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z', 10, 'white') +
+              '</div>' +
+            '</div>' +
+            '<div style="flex:1">' +
+              '<div style="font-size:20px;font-weight:'+T.wt.heavy+';color:'+th.text+';font-family:'+T.serif+'">'+ME.name+'</div>' +
+              '<div style="font-size:12px;color:'+th.muted+';margin-top:3px">'+HOUSEHOLD.name+'</div>' +
+              '<div style="display:inline-flex;align-items:center;gap:4px;margin-top:5px;'+
+                'background:'+th.primary+'22;border-radius:'+R.pill+';padding:3px 10px">' +
+                '<span style="font-size:10px">✦</span>' +
+                '<span style="font-size:10px;font-weight:'+T.wt.bold+';color:'+th.primary+'">Household Plan</span>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+
+          /* Stats */
+          '<div style="display:flex;gap:10px">' +
+            statPill(th, 'Recipes saved',  ME.recipes, th.primary) +
+            statPill(th, 'Meals cooked',   ME.cooked,  th.secondary) +
+            statPill(th, 'Days streak',    '12',        th.warning) +
+          '</div>' +
+        '</div>' +
+
+        /* Household shortcut */
+        '<div onclick="otGo(\'householdDash\')" style="margin:14px '+S.xl+' 0;padding:14px 16px;'+
+          'background:'+th.card+';border:0.5px solid '+th.border+';border-radius:'+R.lg+';'+
+          'display:flex;align-items:center;gap:12px;cursor:pointer">' +
+          /* Member avatars */
+          '<div style="display:flex">' +
+            HOUSEHOLD.members.map(function (m, i) {
+              return '<div style="width:34px;height:34px;border-radius:50%;background:'+m.color+';'+
+                'display:flex;align-items:center;justify-content:center;'+
+                'border:2px solid '+th.card+';margin-left:'+(i>0?'-10px':'0')+';z-index:'+(3-i)+'">' +
+                '<span style="font-size:13px;font-weight:'+T.wt.heavy+';color:white">'+m.initials+'</span>' +
+              '</div>';
+            }).join('') +
+          '</div>' +
+          '<div style="flex:1">' +
+            '<div style="font-size:13px;font-weight:'+T.wt.bold+';color:'+th.text+'">'+HOUSEHOLD.name+'</div>' +
+            '<div style="font-size:11px;color:'+th.muted+'">'+HOUSEHOLD.members.length+' members · Manage household</div>' +
+          '</div>' +
+          iconSvg('M9 18l6-6-6-6', 14, th.muted) +
+        '</div>' +
+
+        /* Sections */
+        '<div style="margin:14px '+S.xl+' 0">' +
+
+          /* My activity */
+          '<div style="font-size:11px;font-weight:'+T.wt.semi+';color:'+th.muted+';'+
+            'letter-spacing:0.06em;margin-bottom:10px">MY ACTIVITY</div>' +
+          '<div style="background:'+th.card+';border:0.5px solid '+th.border+';border-radius:'+R.lg+';overflow:hidden;margin-bottom:14px">' +
+            [
+              ['📚', 'My Recipe Book',   '',          "otGo('profile')"],
+              ['⭐', 'Favourites',       '14 recipes',"otGo('profile')"],
+              ['🕐', 'Recently Cooked',  '6 meals',   "otGo('profile')"],
+              ['📊', 'Cooking Stats',    '',           "otGo('profile')"]
+            ].map(function (r) { return c.settingsRow(th, r[0], r[1], r[2], r[3]); }).join('') +
+          '</div>' +
+
+          /* Preferences */
+          '<div style="font-size:11px;font-weight:'+T.wt.semi+';color:'+th.muted+';'+
+            'letter-spacing:0.06em;margin-bottom:10px">PREFERENCES</div>' +
+          '<div style="background:'+th.card+';border:0.5px solid '+th.border+';border-radius:'+R.lg+';overflow:hidden;margin-bottom:14px">' +
+            [
+              ['🥗', 'Dietary Preferences', ME.dietary.join(', '), "otGo('appSettings')"],
+              ['🔔', 'Notifications',        'On',                  "otGo('notifications')"],
+              ['🌙', 'Appearance',           'System',              "otGo('appSettings')"]
+            ].map(function (r) { return c.settingsRow(th, r[0], r[1], r[2], r[3]); }).join('') +
+          '</div>' +
+
+          /* Account */
+          '<div style="font-size:11px;font-weight:'+T.wt.semi+';color:'+th.muted+';'+
+            'letter-spacing:0.06em;margin-bottom:10px">ACCOUNT</div>' +
+          '<div style="background:'+th.card+';border:0.5px solid '+th.border+';border-radius:'+R.lg+';overflow:hidden;margin-bottom:14px">' +
+            [
+              ['✨', 'Our Table Plus',   'Household', "otGo('subscription')"],
+              ['🔒', 'Privacy & Data',   '',          "otGo('appSettings')"],
+              ['❓', 'Help & Support',   '',          "otGo('appSettings')"]
+            ].map(function (r) { return c.settingsRow(th, r[0], r[1], r[2], r[3]); }).join('') +
+          '</div>' +
+
+          /* Sign out */
+          '<div onclick="return false" style="text-align:center;padding:14px;'+
+            'font-size:13px;color:'+th.error+';cursor:pointer;font-weight:'+T.wt.semi+'">Sign Out</div>' +
+
+        '</div>' +
+
+      '</div>' +
+
+      c.navBar(th, 4, 'otNavBar') +
+
+    '</div>';
+  }
+
+  /* ── 2. HOUSEHOLD DASHBOARD ─────────────────────────────── */
+  function sHouseholdDash(th) {
+    return '<div style="height:100%;background:'+th.bg+';display:flex;flex-direction:column;'+
+      'position:relative;font-family:'+T.sans+'">' +
+
+      c.notch() + c.statusBar(th) +
+
+      '<div style="padding:4px '+S.xl+' 14px">' +
+        c.backBtn(th, 'Profile') +
+        '<div style="margin-top:6px;display:flex;justify-content:space-between;align-items:flex-end">' +
+          '<div>' +
+            '<div style="font-size:22px;font-weight:'+T.wt.heavy+';color:'+th.text+';font-family:'+T.serif+'">My Household</div>' +
+            '<div style="font-size:12px;color:'+th.muted+';margin-top:4px">'+HOUSEHOLD.name+'</div>' +
+          '</div>' +
+          '<div onclick="return false" style="font-size:11px;color:'+th.primary+';cursor:pointer;font-weight:'+T.wt.semi+'">+ Invite</div>' +
+        '</div>' +
+      '</div>' +
+
+      '<div style="flex:1;overflow-y:auto;padding:0 '+S.xl+' 24px;scrollbar-width:none">' +
+
+        /* Members */
+        '<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">' +
+          HOUSEHOLD.members.map(function (member) {
+            return '<div onclick="otState.viewingMember=\''+member.name+'\';otGo(\'memberDetail\')" '+
+              'style="background:'+th.card+';border:0.5px solid '+th.border+';'+
+              'border-radius:'+R.lg+';padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:14px">' +
+              /* Avatar */
+              '<div style="width:48px;height:48px;border-radius:50%;background:'+member.color+';'+
+                'display:flex;align-items:center;justify-content:center;flex-shrink:0">' +
+                '<span style="font-size:18px;font-weight:'+T.wt.heavy+';color:white">'+member.initials+'</span>' +
+              '</div>' +
+              /* Info */
+              '<div style="flex:1">' +
+                '<div style="display:flex;align-items:center;gap:7px;margin-bottom:4px">' +
+                  '<span style="font-size:15px;font-weight:'+T.wt.bold+';color:'+th.text+'">'+member.name+'</span>' +
+                  (member.role==='Admin' ?
+                    '<span style="font-size:9px;background:'+th.primary+'22;color:'+th.primary+';'+
+                      'border-radius:'+R.pill+';padding:2px 7px;font-weight:'+T.wt.bold+'">Admin</span>' : '') +
+                '</div>' +
+                '<div style="display:flex;flex-wrap:wrap;gap:4px">' +
+                  member.dietary.map(function (d) {
+                    return '<span style="font-size:9px;padding:2px 7px;border-radius:'+R.pill+';'+
+                      'background:'+th.chip+';color:'+th.chipTx+'">'+d+'</span>';
+                  }).join('') +
+                '</div>' +
+              '</div>' +
+              /* Mini stats */
+              '<div style="text-align:right">' +
+                '<div style="font-size:14px;font-weight:'+T.wt.heavy+';color:'+th.text+'">'+member.recipes+'</div>' +
+                '<div style="font-size:9px;color:'+th.muted+'">recipes</div>' +
+              '</div>' +
+              iconSvg('M9 18l6-6-6-6', 14, th.muted) +
+            '</div>';
+          }).join('') +
+        '</div>' +
+
+        /* Shared stats */
+        '<div style="font-size:11px;font-weight:'+T.wt.semi+';color:'+th.muted+';'+
+          'letter-spacing:0.06em;margin-bottom:10px">HOUSEHOLD STATS</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px">' +
+          [
+            { icon:'📚', label:'Shared recipes',   val:'60'    },
+            { icon:'🍳', label:'Meals cooked',     val:'29'    },
+            { icon:'🛒', label:'Lists created',    val:'8'     },
+            { icon:'🌱', label:'Food waste saved', val:'$62'   }
+          ].map(function (s) {
+            return '<div style="background:'+th.card+';border:0.5px solid '+th.border+';'+
+              'border-radius:'+R.md+';padding:14px;display:flex;align-items:center;gap:10px">' +
+              '<span style="font-size:22px">'+s.icon+'</span>' +
+              '<div>' +
+                '<div style="font-size:18px;font-weight:'+T.wt.heavy+';color:'+th.text+'">'+s.val+'</div>' +
+                '<div style="font-size:10px;color:'+th.muted+'">'+s.label+'</div>' +
+              '</div>' +
+            '</div>';
+          }).join('') +
+        '</div>' +
+
+        /* Dietary conflict summary */
+        '<div style="font-size:11px;font-weight:'+T.wt.semi+';color:'+th.muted+';'+
+          'letter-spacing:0.06em;margin-bottom:10px">DIETARY OVERVIEW</div>' +
+        '<div style="background:'+th.card+';border:0.5px solid '+th.border+';'+
+          'border-radius:'+R.lg+';overflow:hidden">' +
+          HOUSEHOLD.members.map(function (m) {
+            return '<div style="display:flex;align-items:center;padding:11px 14px;'+
+              'border-bottom:0.5px solid '+th.border+';gap:10px">' +
+              '<div style="width:28px;height:28px;border-radius:50%;background:'+m.color+';'+
+                'display:flex;align-items:center;justify-content:center;flex-shrink:0">' +
+                '<span style="font-size:11px;font-weight:'+T.wt.heavy+';color:white">'+m.initials+'</span>' +
+              '</div>' +
+              '<span style="flex:1;font-size:13px;color:'+th.text+'">'+m.name+'</span>' +
+              '<div style="display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end">' +
+                m.dietary.map(function (d) {
+                  return '<span style="font-size:9px;padding:2px 7px;border-radius:'+R.pill+';'+
+                    'background:'+(d==='None'?th.chip:th.secondary+'22')+';color:'+(d==='None'?th.chipTx:th.secondary)+';'+
+                    'font-weight:'+(d==='None'?T.wt.reg:T.wt.semi)+'">'+d+'</span>';
+                }).join('') +
+              '</div>' +
+            '</div>';
+          }).join('') +
+        '</div>' +
+
+      '</div>' +
+    '</div>';
+  }
+
+  /* ── 3. MEMBER DETAIL ───────────────────────────────────── */
+  function sMemberDetail(th) {
+    var name   = otState.viewingMember || 'Emma';
+    var member = HOUSEHOLD.members.filter(function (m) { return m.name === name; })[0] || HOUSEHOLD.members[1];
+
+    return '<div style="height:100%;background:'+th.bg+';display:flex;flex-direction:column;'+
+      'position:relative;font-family:'+T.sans+'">' +
+
+      c.notch() + c.statusBar(th) +
+
+      '<div style="padding:4px '+S.xl+' 14px">' +
+        c.backBtn(th, 'Household') +
+      '</div>' +
+
+      '<div style="flex:1;overflow-y:auto;padding:0 '+S.xl+' 24px;scrollbar-width:none">' +
+
+        /* Hero */
+        '<div style="display:flex;flex-direction:column;align-items:center;padding:16px 0 24px">' +
+          '<div style="width:80px;height:80px;border-radius:50%;background:'+member.color+';'+
+            'display:flex;align-items:center;justify-content:center;margin-bottom:12px;'+
+            'box-shadow:0 12px 32px '+member.color+'60">' +
+            '<span style="font-size:32px;font-weight:'+T.wt.heavy+';color:white">'+member.initials+'</span>' +
+          '</div>' +
+          '<div style="font-size:22px;font-weight:'+T.wt.heavy+';color:'+th.text+';font-family:'+T.serif+'">'+member.name+'</div>' +
+          '<div style="font-size:12px;color:'+th.muted+';margin-top:4px">'+member.role+'</div>' +
+        '</div>' +
+
+        /* Stats */
+        '<div style="display:flex;gap:10px;margin-bottom:20px">' +
+          statPill(th, 'Recipes', member.recipes, member.color) +
+          statPill(th, 'Cooked',  member.cooked,  th.secondary) +
+          statPill(th, 'Streak',  '5 days',        th.warning) +
+        '</div>' +
+
+        /* Dietary */
+        '<div style="font-size:11px;font-weight:'+T.wt.semi+';color:'+th.muted+';'+
+          'letter-spacing:0.06em;margin-bottom:8px">DIETARY PREFERENCES</div>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px">' +
+          member.dietary.map(function (d) {
+            return '<span style="padding:5px 14px;border-radius:'+R.pill+';font-size:12px;'+
+              'background:'+member.color+'22;color:'+member.color+';border:1px solid '+member.color+'44;'+
+              'font-weight:'+T.wt.semi+'">✓ '+d+'</span>';
+          }).join('') +
+          '<span onclick="return false" style="padding:5px 14px;border-radius:'+R.pill+';font-size:12px;'+
+            'background:'+th.chip+';color:'+th.primary+';border:1px dashed '+th.primary+';cursor:pointer">+ Add</span>' +
+        '</div>' +
+
+        /* Recent recipes */
+        '<div style="font-size:11px;font-weight:'+T.wt.semi+';color:'+th.muted+';'+
+          'letter-spacing:0.06em;margin-bottom:10px">'+member.name.toUpperCase()+'\'S RECIPES</div>' +
+        '<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:18px">' +
+          [
+            { title:'Dairy-Free Pasta',     color:'#C89040', time:'25 min' },
+            { title:'Coconut Curry',         color:'#3A6898', time:'30 min' },
+            { title:'Oat Banana Pancakes',   color:'#D4A848', time:'15 min' }
+          ].map(function (r) {
+            return '<div style="display:flex;align-items:center;gap:12px;padding:10px 12px;'+
+              'background:'+th.card+';border:0.5px solid '+th.border+';border-radius:'+R.md+'">' +
+              '<div style="width:40px;height:40px;border-radius:'+R.sm+';background:'+r.color+';flex-shrink:0"></div>' +
+              '<div style="flex:1">' +
+                '<div style="font-size:13px;font-weight:'+T.wt.semi+';color:'+th.text+'">'+r.title+'</div>' +
+                '<div style="font-size:10px;color:'+th.muted+'">⏱ '+r.time+'</div>' +
+              '</div>' +
+              iconSvg('M9 18l6-6-6-6', 13, th.muted) +
+            '</div>';
+          }).join('') +
+        '</div>' +
+
+        /* Actions */
+        (name !== 'Will' ?
+          '<div style="display:flex;gap:8px">' +
+            '<div onclick="return false" style="flex:1;padding:11px;text-align:center;border-radius:'+R.md+';'+
+              'border:1.5px solid '+th.border+';font-size:13px;font-weight:'+T.wt.semi+';color:'+th.text+';cursor:pointer">'+
+              'Edit preferences' +
+            '</div>' +
+            '<div onclick="return false" style="flex:1;padding:11px;text-align:center;border-radius:'+R.md+';'+
+              'border:1.5px solid '+th.error+';font-size:13px;font-weight:'+T.wt.semi+';color:'+th.error+';cursor:pointer">'+
+              'Remove member' +
+            '</div>' +
+          '</div>'
+        : '') +
+
+      '</div>' +
+    '</div>';
+  }
+
+  /* ── 4. APP SETTINGS ────────────────────────────────────── */
+  function sAppSettings(th) {
+    return '<div style="height:100%;background:'+th.bg+';display:flex;flex-direction:column;'+
+      'position:relative;font-family:'+T.sans+'">' +
+
+      c.notch() + c.statusBar(th) +
+
+      '<div style="padding:4px '+S.xl+' 14px">' +
+        c.backBtn(th, 'Profile') +
+        '<div style="font-size:22px;font-weight:'+T.wt.heavy+';color:'+th.text+';'+
+          'font-family:'+T.serif+';margin-top:8px">Settings</div>' +
+      '</div>' +
+
+      '<div style="flex:1;overflow-y:auto;padding:0 '+S.xl+' 24px;scrollbar-width:none">' +
+
+        /* Dietary */
+        '<div style="font-size:11px;font-weight:'+T.wt.semi+';color:'+th.muted+';'+
+          'letter-spacing:0.06em;margin-bottom:10px">MY DIETARY PREFERENCES</div>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px">' +
+          ['None','Vegetarian','Vegan','Gluten-Free','Dairy-Free','Nut-Free','Halal','Kosher'].map(function (d) {
+            var sel = d === 'None';
+            return c.dietTag(th, d, sel, 'return false');
+          }).join('') +
+        '</div>' +
+
+        /* Appearance */
+        '<div style="font-size:11px;font-weight:'+T.wt.semi+';color:'+th.muted+';'+
+          'letter-spacing:0.06em;margin-bottom:10px">APPEARANCE</div>' +
+        '<div style="background:'+th.card+';border:0.5px solid '+th.border+';border-radius:'+R.lg+';overflow:hidden;margin-bottom:18px">' +
+          '<div style="padding:14px 16px;border-bottom:0.5px solid '+th.border+';'+
+            'display:flex;align-items:center;justify-content:space-between">' +
+            '<div>' +
+              '<div style="font-size:13px;font-weight:'+T.wt.semi+';color:'+th.text+'">Dark Mode</div>' +
+              '<div style="font-size:11px;color:'+th.muted+'">Currently: '+(th._name==='dark'?'On':'Off')+'</div>' +
+            '</div>' +
+            '<div onclick="otToggleTheme()" style="width:44px;height:26px;border-radius:'+R.pill+';cursor:pointer;'+
+              'background:'+(th._name==='dark'?th.secondary:th.chip)+';position:relative;transition:background 0.2s">' +
+              '<div style="position:absolute;top:3px;left:'+(th._name==='dark'?'21':'3')+'px;'+
+                'width:20px;height:20px;border-radius:50%;background:white;transition:left 0.2s;'+
+                'box-shadow:0 2px 4px rgba(0,0,0,0.2)"></div>' +
+            '</div>' +
+          '</div>' +
+          c.settingsRow(th, '🔤', 'Text Size', 'Medium', 'return false') +
+          c.settingsRow(th, '🌐', 'Language',  'English', 'return false') +
+        '</div>' +
+
+        /* Cooking */
+        '<div style="font-size:11px;font-weight:'+T.wt.semi+';color:'+th.muted+';'+
+          'letter-spacing:0.06em;margin-bottom:10px">COOKING</div>' +
+        '<div style="background:'+th.card+';border:0.5px solid '+th.border+';border-radius:'+R.lg+';overflow:hidden;margin-bottom:18px">' +
+          c.settingsRow(th, '📏', 'Measurement Units', 'Imperial', 'return false') +
+          c.settingsRow(th, '👨‍👩‍👧', 'Default Servings',  '4', 'return false') +
+          c.settingsRow(th, '⚠️', 'Allergy Warnings',  'On', 'return false') +
+        '</div>' +
+
+        /* Privacy */
+        '<div style="font-size:11px;font-weight:'+T.wt.semi+';color:'+th.muted+';'+
+          'letter-spacing:0.06em;margin-bottom:10px">PRIVACY & DATA</div>' +
+        '<div style="background:'+th.card+';border:0.5px solid '+th.border+';border-radius:'+R.lg+';overflow:hidden;margin-bottom:18px">' +
+          c.settingsRow(th, '📤', 'Export My Data', '', 'return false') +
+          c.settingsRow(th, '🗑️', 'Delete Account', '', 'return false') +
+        '</div>' +
+
+        '<div style="text-align:center;font-size:10px;color:'+th.muted+';margin-top:8px">' +
+          'Our Table v2.1.0 · Privacy Policy · Terms of Service' +
+        '</div>' +
+
+      '</div>' +
+    '</div>';
+  }
+
+  /* ── 5. NOTIFICATIONS ───────────────────────────────────── */
+  function sNotifications(th) {
+    var toggleRow = function (icon, label, sub, key) {
+      var on = otState['notif_'+key] !== false;
+      return '<div style="padding:13px 16px;border-bottom:0.5px solid '+th.border+';'+
+        'display:flex;align-items:center;gap:13px">' +
+        '<div style="width:32px;height:32px;border-radius:'+R.xs+';background:'+th.chip+';'+
+          'display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">'+icon+'</div>' +
+        '<div style="flex:1">' +
+          '<div style="font-size:13px;color:'+th.text+'">'+label+'</div>' +
+          (sub ? '<div style="font-size:10px;color:'+th.muted+';margin-top:2px">'+sub+'</div>' : '') +
+        '</div>' +
+        '<div onclick="otState[\'notif_'+key+'\']='+(!on)+';otRender()" '+
+          'style="width:44px;height:26px;border-radius:'+R.pill+';cursor:pointer;'+
+          'background:'+(on?th.primary:th.chip)+';position:relative;transition:background 0.2s">' +
+          '<div style="position:absolute;top:3px;left:'+(on?'21':'3')+'px;'+
+            'width:20px;height:20px;border-radius:50%;background:white;transition:left 0.2s;'+
+            'box-shadow:0 2px 4px rgba(0,0,0,0.2)"></div>' +
+        '</div>' +
+      '</div>';
+    };
+
+    return '<div style="height:100%;background:'+th.bg+';display:flex;flex-direction:column;'+
+      'position:relative;font-family:'+T.sans+'">' +
+
+      c.notch() + c.statusBar(th) +
+
+      '<div style="padding:4px '+S.xl+' 14px">' +
+        c.backBtn(th, 'Profile') +
+        '<div style="font-size:22px;font-weight:'+T.wt.heavy+';color:'+th.text+';'+
+          'font-family:'+T.serif+';margin-top:8px">Notifications</div>' +
+      '</div>' +
+
+      '<div style="flex:1;overflow-y:auto;padding:0 '+S.xl+' 24px;scrollbar-width:none">' +
+
+        '<div style="background:'+th.card+';border:0.5px solid '+th.border+';border-radius:'+R.lg+';overflow:hidden;margin-bottom:18px">' +
+          toggleRow('🛒', 'Grocery reminders',     'Before your usual shopping day', 'grocery') +
+          toggleRow('⚠️', 'Expiry alerts',          '2 days before items expire',    'expiry') +
+          toggleRow('🍽️', 'Meal suggestions',       'Daily recipe ideas',            'meals') +
+          toggleRow('👨‍👩‍👧', 'Household updates',     'When members add recipes',      'household') +
+          toggleRow('🌟', 'Trending recipes',        'Weekly viral saves',            'trending') +
+          toggleRow('✅', 'Cooking mode reminders', 'Step timers & alerts',          'cooking') +
+        '</div>' +
+
+        '<div style="background:'+th.card+';border:0.5px solid '+th.border+';border-radius:'+R.lg+';overflow:hidden">' +
+          '<div style="padding:12px 14px;font-size:11px;font-weight:'+T.wt.semi+';color:'+th.muted+';'+
+            'letter-spacing:0.05em;border-bottom:0.5px solid '+th.border+'">QUIET HOURS</div>' +
+          c.settingsRow(th, '🌙', 'Do Not Disturb', '10pm – 8am', 'return false') +
+        '</div>' +
+
+      '</div>' +
+    '</div>';
+  }
+
+  /* ── 6. SUBSCRIPTION / UPGRADE ─────────────────────────── */
+  function sSubscription(th) {
+    var plans = [
+      {
+        id: 'free',
+        name: 'Free',
+        price: '$0',
+        period: 'forever',
+        color: th.muted,
+        features: ['Save up to 30 recipes','Basic grocery list','Fridge scanner (5/month)','1 household member'],
+        current: false
+      },
+      {
+        id: 'plus',
+        name: 'Our Table Plus',
+        price: '$9.99',
+        period: 'one-time',
+        color: th.primary,
+        features: ['Unlimited recipe saves','URL & social import','Fridge scanner (unlimited)','Cooking mode','Cost per meal tracker','Family Recipe Book','Priority support'],
+        current: false
+      },
+      {
+        id: 'household',
+        name: 'Household',
+        price: '$19.99',
+        period: 'per year',
+        color: th.secondary,
+        badge: 'Current Plan',
+        features: ['Everything in Plus','Up to 6 members','Shared grocery lists','Dietary conflict warnings','Household stats','Web access (recipebook.ourtable.app)'],
+        current: true
+      }
+    ];
+
+    return '<div style="height:100%;background:'+th.bg+';display:flex;flex-direction:column;'+
+      'position:relative;font-family:'+T.sans+'">' +
+
+      c.notch() + c.statusBar(th) +
+
+      '<div style="padding:4px '+S.xl+' 14px">' +
+        c.backBtn(th, 'Profile') +
+        '<div style="margin-top:8px">' +
+          '<div style="font-size:22px;font-weight:'+T.wt.heavy+';color:'+th.text+';font-family:'+T.serif+'">Our Table Plus</div>' +
+          '<div style="font-size:12px;color:'+th.muted+';margin-top:4px">Simple pricing — own it forever</div>' +
+        '</div>' +
+      '</div>' +
+
+      '<div style="flex:1;overflow-y:auto;padding:0 '+S.xl+' 24px;scrollbar-width:none">' +
+
+        /* Plans */
+        '<div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px">' +
+          plans.map(function (plan) {
+            return '<div style="background:'+th.card+';border:'+(plan.current?'2px':'0.5px')+' solid '+(plan.current?plan.color:th.border)+';'+
+              'border-radius:'+R.xl+';padding:18px;position:relative;overflow:hidden">' +
+
+              /* Badge */
+              (plan.badge ?
+                '<div style="position:absolute;top:14px;right:14px;background:'+plan.color+';'+
+                  'color:white;border-radius:'+R.pill+';padding:3px 10px;font-size:9px;font-weight:'+T.wt.heavy+'">'+plan.badge+'</div>'
+              : '') +
+
+              /* Plan header */
+              '<div style="margin-bottom:10px">' +
+                '<div style="font-size:15px;font-weight:'+T.wt.heavy+';color:'+th.text+';margin-bottom:4px">'+plan.name+'</div>' +
+                '<div style="display:flex;align-items:baseline;gap:4px">' +
+                  '<span style="font-size:24px;font-weight:'+T.wt.heavy+';color:'+plan.color+'">'+plan.price+'</span>' +
+                  '<span style="font-size:11px;color:'+th.muted+'">'+plan.period+'</span>' +
+                '</div>' +
+              '</div>' +
+
+              /* Features */
+              '<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:'+(plan.current?'0':'14')+'px">' +
+                plan.features.map(function (f) {
+                  return '<div style="display:flex;align-items:center;gap:8px">' +
+                    '<div style="width:16px;height:16px;border-radius:50%;background:'+plan.color+'22;'+
+                      'flex-shrink:0;display:flex;align-items:center;justify-content:center">' +
+                      '<svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="'+plan.color+'" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>' +
+                    '</div>' +
+                    '<span style="font-size:12px;color:'+th.muted+'">'+f+'</span>' +
+                  '</div>';
+                }).join('') +
+              '</div>' +
+
+              /* CTA (not for current plan) */
+              (!plan.current && plan.id !== 'free' ?
+                '<button onclick="return false" style="width:100%;padding:12px;border-radius:'+R.md+';border:none;'+
+                  'background:'+plan.color+';color:white;font-size:14px;font-weight:'+T.wt.bold+';'+
+                  'cursor:pointer;font-family:'+T.sans+';box-shadow:0 6px 18px '+plan.color+'40">'+
+                  (plan.id==='plus' ? 'Upgrade — $9.99' : 'Switch to Yearly — $19.99/yr') +
+                '</button>'
+              : '') +
+
+            '</div>';
+          }).join('') +
+        '</div>' +
+
+        /* Trust badges */
+        '<div style="display:flex;justify-content:center;gap:20px;margin-bottom:16px">' +
+          ['🔒 Secure','✨ No ads','📱 Yours forever'].map(function (b) {
+            return '<span style="font-size:10px;color:'+th.muted+'">'+b+'</span>';
+          }).join('') +
+        '</div>' +
+
+        '<div style="text-align:center;font-size:10px;color:'+th.muted+'">' +
+          'Manage subscription · Restore purchases' +
+        '</div>' +
+
+      '</div>' +
+    '</div>';
+  }
+
+  /* ── 7. EDIT PROFILE ────────────────────────────────────── */
+  function sEditProfile(th) {
+    return '<div style="height:100%;background:'+th.bg+';display:flex;flex-direction:column;'+
+      'position:relative;font-family:'+T.sans+'">' +
+
+      c.notch() + c.statusBar(th) +
+
+      '<div style="padding:4px '+S.xl+' 14px;display:flex;align-items:center;justify-content:space-between">' +
+        c.backBtn(th, 'Profile') +
+        '<div onclick="return false" style="font-size:13px;color:'+th.primary+';font-weight:'+T.wt.semi+';cursor:pointer">Save</div>' +
+      '</div>' +
+
+      '<div style="flex:1;overflow-y:auto;padding:0 '+S.xl+' 24px;scrollbar-width:none">' +
+
+        /* Avatar picker */
+        '<div style="display:flex;flex-direction:column;align-items:center;padding:10px 0 24px">' +
+          '<div style="position:relative;margin-bottom:12px">' +
+            c.avatar(th, 'W', null, '80px') +
+            '<div onclick="return false" style="position:absolute;bottom:-2px;right:-2px;'+
+              'width:28px;height:28px;border-radius:50%;background:'+th.primary+';'+
+              'display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid '+th.bg+'">' +
+              '<span style="font-size:14px">📷</span>' +
+            '</div>' +
+          '</div>' +
+          '<div style="font-size:12px;color:'+th.primary+';cursor:pointer">Change photo</div>' +
+        '</div>' +
+
+        '<div style="display:flex;flex-direction:column;gap:14px">' +
+          '<div style="display:flex;gap:10px">' +
+            '<div style="flex:1">'+c.field(th, 'ep-first', 'text', 'First name', 'Will', 'Will')+'</div>' +
+            '<div style="flex:1">'+c.field(th, 'ep-last',  'text', 'Last name',  'Wilson', 'Wilson')+'</div>' +
+          '</div>' +
+          c.field(th, 'ep-email', 'email', 'Email', 'will@example.com', 'will@example.com') +
+          c.field(th, 'ep-pass',  'password', 'Password', '••••••••', '••••••••') +
+        '</div>' +
+
+      '</div>' +
+    '</div>';
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     NAV WIRING
+  ══════════════════════════════════════════════════════════ */
+
+  OT.nav(
+    {
+      profile:       sProfile,
+      householdDash: sHouseholdDash,
+      memberDetail:  sMemberDetail,
+      appSettings:   sAppSettings,
+      notifications: sNotifications,
+      subscription:  sSubscription,
+      editProfile:   sEditProfile
+    },
+    'profile',
+    'phone-screen',
+    {
+      mainScreens: ['profile'],
+      state: {
+        viewingMember: 'Emma',
+        notif_grocery:   true,
+        notif_expiry:    true,
+        notif_meals:     true,
+        notif_household: false,
+        notif_trending:  false,
+        notif_cooking:   true
+      },
+      onRender: function (state, theme) {
+        var el = document.getElementById('screen-label');
+        if (el) el.textContent = SCREEN_NAMES[state.screen] || state.screen;
+
+        var dotsEl = document.getElementById('screen-dots');
+        if (dotsEl) {
+          var visible = ['profile','householdDash','memberDetail','appSettings','notifications','subscription'];
+          var idx = visible.indexOf(state.screen);
+          if (idx < 0) idx = 0;
+          dotsEl.innerHTML = visible.map(function (_, i) {
+            return '<div class="dot'+(i===idx?' on':'')+'" ></div>';
+          }).join('');
+        }
+
+        var btn = document.getElementById('theme-btn');
+        if (btn) btn.textContent = theme._name === 'dark' ? '☀ Light Mode' : '☾ Dark Mode';
+      }
+    }
+  );
+
+  window.otNavBar = function (id) {
+    if (id === 'profile') { otGo('profile'); return; }
+    otGo(id);
+  };
+
+})();
+</script>
+</body>
+</html>

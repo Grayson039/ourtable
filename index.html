@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OurTable — Interactive Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: #FAF7F0; min-height: 100vh; color: #1A1208; }
+.header { background: #1B3A5C; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 16px rgba(27,58,92,0.18); }
+.header-logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 800; color: #FAF7F0; }
+.header-logo span { color: #E8A84A; }
+.header-tag { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.18); padding: 4px 12px; border-radius: 100px; }
+.main { max-width: 1100px; margin: 0 auto; padding: 48px 24px; }
+.intro { text-align: center; margin-bottom: 48px; }
+.intro h1 { font-family: 'Playfair Display', serif; font-size: 38px; font-weight: 800; color: #1B3A5C; margin-bottom: 12px; line-height: 1.2; }
+.intro h1 em { color: #E8A84A; font-style: normal; }
+.intro p { font-size: 15px; color: #7A6E62; line-height: 1.7; max-width: 520px; margin: 0 auto 28px; }
+.intro-stats { display: flex; gap: 32px; justify-content: center; flex-wrap: wrap; }
+.stat { text-align: center; }
+.stat-num { font-size: 30px; font-weight: 800; color: #1B3A5C; font-family: 'Playfair Display', serif; line-height: 1; margin-bottom: 4px; }
+.stat-label { font-size: 11px; color: #7A6E62; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+.flow-section { background: #FFFFFF; border: 1px solid rgba(27,58,92,0.10); border-radius: 20px; padding: 28px 32px; margin-bottom: 32px; box-shadow: 0 2px 12px rgba(27,58,92,0.06); }
+.flow-title { font-size: 11px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: #7A6E62; margin-bottom: 16px; }
+.flow-path { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.flow-step { background: rgba(27,58,92,0.06); border: 1.5px solid rgba(27,58,92,0.15); border-radius: 8px; padding: 7px 14px; font-size: 12px; font-weight: 600; color: #1B3A5C; text-decoration: none; transition: all 0.15s; }
+.flow-step:hover { background: #1B3A5C; color: white; border-color: #1B3A5C; }
+.flow-arrow { color: #E8A84A; font-size: 16px; font-weight: 700; }
+.section-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-bottom: 48px; }
+.section-card { background: #FFFFFF; border: 1px solid rgba(27,58,92,0.10); border-radius: 18px; overflow: hidden; cursor: pointer; transition: all 0.2s; text-decoration: none; display: block; box-shadow: 0 2px 8px rgba(27,58,92,0.06); }
+.section-card:hover { border-color: rgba(232,168,74,0.5); transform: translateY(-3px); box-shadow: 0 10px 28px rgba(27,58,92,0.12); }
+.section-preview { height: 140px; display: flex; align-items: center; justify-content: center; font-size: 52px; position: relative; }
+.section-preview.auth    { background: linear-gradient(135deg, #1B3A5C 0%, #0F2840 100%); }
+.section-preview.home    { background: linear-gradient(135deg, #2A4E74 0%, #1B3A5C 100%); }
+.section-preview.recipe  { background: linear-gradient(135deg, #E8A84A 0%, #C8843A 100%); }
+.section-preview.add     { background: linear-gradient(135deg, #1B3A5C 0%, #2A5070 100%); }
+.section-preview.fridge  { background: linear-gradient(135deg, #3A5878 0%, #1B3A5C 100%); }
+.section-preview.grocery { background: linear-gradient(135deg, #E8A84A 0%, #D49030 100%); }
+.section-preview.profile { background: linear-gradient(135deg, #1B3A5C 0%, #142C46 100%); }
+.section-preview.recipe::after, .section-preview.grocery::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 70% 30%, rgba(255,255,255,0.12) 0%, transparent 60%); pointer-events: none; }
+.section-info { padding: 18px 16px 16px; }
+.section-title { font-size: 15px; font-weight: 700; color: #1A1208; margin-bottom: 5px; }
+.section-desc { font-size: 12px; color: #7A6E62; line-height: 1.55; margin-bottom: 12px; }
+.section-screens { font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: #E8A84A; }
+.footer { text-align: center; padding: 32px; font-size: 12px; color: #7A6E62; border-top: 1px solid rgba(27,58,92,0.08); }
+.footer strong { color: #1B3A5C; }
+.footer a { color: #E8A84A; text-decoration: none; font-weight: 600; }
+.footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-logo">Our<span>Table</span></div>
+  <div class="header-tag">Interactive Prototype · v3.0</div>
+</div>
+<div class="main">
+  <div class="intro">
+    <h1>Family Kitchen <em>Platform</em></h1>
+    <p>A household meal intelligence app built from a real problem. Save recipes, scan your fridge, cook for everyone at your table.</p>
+    <div class="intro-stats">
+      <div class="stat"><div class="stat-num">7</div><div class="stat-label">Screen Sections</div></div>
+      <div class="stat"><div class="stat-num">18</div><div class="stat-label">Live Screens</div></div>
+      <div class="stat"><div class="stat-num">2</div><div class="stat-label">Themes</div></div>
+      <div class="stat"><div class="stat-num">1</div><div class="stat-label">Real Family Problem</div></div>
+    </div>
+  </div>
+  <div class="flow-section">
+    <div class="flow-title">Suggested Flow — Start Here</div>
+    <div class="flow-path">
+      <a href="01-auth-onboarding.html" class="flow-step">1. Onboarding</a>
+      <span class="flow-arrow">→</span>
+      <a href="02-home-search-library.html" class="flow-step">2. Home & Browse</a>
+      <span class="flow-arrow">→</span>
+      <a href="03-recipe-detail.html" class="flow-step">3. Recipe Detail</a>
+      <span class="flow-arrow">→</span>
+      <a href="04-add-recipe.html" class="flow-step">4. Add Recipe</a>
+      <span class="flow-arrow">→</span>
+      <a href="05-fridge-pantry.html" class="flow-step">5. Fridge Scan</a>
+      <span class="flow-arrow">→</span>
+      <a href="06-grocery-list.html" class="flow-step">6. Grocery List</a>
+      <span class="flow-arrow">→</span>
+      <a href="07-profile-settings.html" class="flow-step">7. Profile & Settings</a>
+    </div>
+  </div>
+  <div class="section-grid">
+    <a href="01-auth-onboarding.html" class="section-card">
+      <div class="section-preview auth">🔐</div>
+      <div class="section-info">
+        <div class="section-title">Auth & Onboarding</div>
+        <div class="section-desc">Welcome screen, sign up, household setup with dietary preferences per member.</div>
+        <div class="section-screens">6 screens · Start here</div>
+      </div>
+    </a>
+    <a href="02-home-search-library.html" class="section-card">
+      <div class="section-preview home">🏠</div>
+      <div class="section-info">
+        <div class="section-title">Home, Search & Library</div>
+        <div class="section-desc">Personalized feed, recipe search, saved recipe library organized by category.</div>
+        <div class="section-screens">4 screens</div>
+      </div>
+    </a>
+    <a href="03-recipe-detail.html" class="section-card">
+      <div class="section-preview recipe">🍳</div>
+      <div class="section-info">
+        <div class="section-title">Recipe Detail</div>
+        <div class="section-desc">Full recipe view with nutrition, dietary conflict warnings, servings adjuster, and 5-star rating.</div>
+        <div class="section-screens">2 screens · Conflict detection</div>
+      </div>
+    </a>
+    <a href="04-add-recipe.html" class="section-card">
+      <div class="section-preview add">➕</div>
+      <div class="section-info">
+        <div class="section-title">Add Recipe</div>
+        <div class="section-desc">Import from TikTok, Instagram, URL, or any food blog. Manual 4-step entry form.</div>
+        <div class="section-screens">2 screens</div>
+      </div>
+    </a>
+    <a href="05-fridge-pantry.html" class="section-card">
+      <div class="section-preview fridge">🧊</div>
+      <div class="section-info">
+        <div class="section-title">Fridge & Pantry</div>
+        <div class="section-desc">Live fridge/pantry/freezer tracking. "What Can I Make?" match engine.</div>
+        <div class="section-screens">2 screens · Fridge scanner</div>
+      </div>
+    </a>
+    <a href="06-grocery-list.html" class="section-card">
+      <div class="section-preview grocery">🛒</div>
+      <div class="section-info">
+        <div class="section-title">Grocery List</div>
+        <div class="section-desc">Shared household list with real-time checkbox sync across all members.</div>
+        <div class="section-screens">1 screen · Realtime sync</div>
+      </div>
+    </a>
+    <a href="07-profile-settings.html" class="section-card">
+      <div class="section-preview profile">👤</div>
+      <div class="section-info">
+        <div class="section-title">Profile & Settings</div>
+        <div class="section-desc">Household dashboard, member management, dietary preferences, sign out.</div>
+        <div class="section-screens">1 screen · Household system</div>
+      </div>
+    </a>
+  </div>
+</div>
+<div class="footer">
+  Built by <strong>Will Grayson</strong> · OurTable v3.0 · Full-Stack Build Phase 5 Complete ·
+  <a href="https://grayson039.github.io/our-table-case-study.html">Case Study →</a>
+</div>
+</body>
+</html>

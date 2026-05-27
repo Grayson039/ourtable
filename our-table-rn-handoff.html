@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Our Table — RN Dev Handoff</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1B3A5C;--navy-mid:#2E6DA4;--gold:#C9A84C;--sage:#5A8A52;
+  --bg:#F5F8FA;--card:#fff;--text:#1A2E3D;--muted:#6B7E8F;
+  --border:#D8E2EC;--chip:#EBF0F5;--error:#B04040;--warn:#C4884A;
+  --success:#5A8A52;--sans:'Inter',sans-serif;--serif:'Playfair Display',Georgia,serif;
+  --mono:'JetBrains Mono',monospace;
+}
+body{font-family:var(--sans);background:#EEF2F7;color:var(--text);line-height:1.6}
+
+/* Cover */
+.cover{background:var(--navy);color:white;padding:72px 60px 56px;position:relative;overflow:hidden}
+.cover::before{content:'';position:absolute;top:-100px;right:-100px;width:400px;height:400px;border-radius:50%;background:rgba(255,255,255,0.04)}
+.cover::after{content:'';position:absolute;bottom:-60px;left:200px;width:250px;height:250px;border-radius:50%;background:rgba(201,168,76,0.08)}
+.cover-label{font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;opacity:0.5;margin-bottom:10px}
+.cover-title{font-family:var(--serif);font-size:44px;line-height:1.1;margin-bottom:8px}
+.cover-sub{font-size:16px;opacity:0.6;margin-bottom:32px}
+.cover-chips{display:flex;gap:10px;flex-wrap:wrap}
+.cover-chip{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:100px;padding:5px 14px;font-size:12px;font-weight:600}
+.cover-chip.gold{background:rgba(201,168,76,0.2);border-color:rgba(201,168,76,0.4);color:#E8C96A}
+
+/* Layout */
+.container{max-width:900px;margin:0 auto;padding:56px 40px}
+.section{margin-bottom:56px}
+.section-label{font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--navy);opacity:0.55;margin-bottom:6px}
+.section-title{font-family:var(--serif);font-size:26px;color:var(--navy);margin-bottom:20px;padding-bottom:10px;border-bottom:2px solid var(--border)}
+
+/* Cards */
+.card{background:var(--card);border-radius:14px;border:1px solid var(--border);padding:24px;margin-bottom:16px}
+.card-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.card-sub{font-size:13px;color:var(--muted);margin-bottom:14px}
+
+/* Task cards */
+.task{background:var(--card);border-radius:14px;border:1px solid var(--border);margin-bottom:14px;overflow:hidden}
+.task-header{padding:18px 22px;display:flex;align-items:flex-start;gap:16px;cursor:pointer}
+.task-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:1px}
+.task-num.priority{background:var(--navy);color:white}
+.task-num.secondary{background:var(--chip);color:var(--muted)}
+.task-num.done{background:#E8F5E2;color:var(--sage)}
+.task-info{flex:1}
+.task-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:3px}
+.task-desc{font-size:13px;color:var(--muted);line-height:1.5}
+.task-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:100px;white-space:nowrap;margin-top:2px;display:inline-block}
+.badge-start{background:#FFF3E0;color:#E65100}
+.badge-now{background:#E3F2FD;color:#1565C0}
+.badge-done{background:#E8F5E2;color:var(--sage)}
+.badge-ref{background:var(--chip);color:var(--muted)}
+.task-body{padding:0 22px 20px 70px;border-top:1px solid var(--border);display:none}
+.task-body.open{display:block;padding-top:16px}
+
+/* Code blocks */
+pre{background:#0D1117;color:#E6EDF3;border-radius:10px;padding:16px 20px;font-family:var(--mono);font-size:12.5px;line-height:1.7;overflow-x:auto;margin:12px 0;position:relative}
+pre .comment{color:#8B949E}
+pre .cmd{color:#79C0FF}
+pre .str{color:#A5D6FF}
+pre .path{color:#FFA657}
+code{font-family:var(--mono);font-size:12px;background:var(--chip);padding:2px 6px;border-radius:5px;color:var(--navy)}
+
+/* Steps */
+.steps{display:flex;flex-direction:column;gap:10px;margin:14px 0}
+.step{display:flex;gap:12px;align-items:flex-start}
+.step-dot{width:22px;height:22px;border-radius:50%;background:var(--navy);color:white;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.step-text{font-size:13px;color:var(--text);line-height:1.6;flex:1}
+.step-text strong{color:var(--navy)}
+
+/* Warning / info boxes */
+.warn-box{background:#FFF8E7;border:1px solid #F0D080;border-radius:10px;padding:14px 16px;font-size:13px;color:#7A5500;margin:12px 0;display:flex;gap:10px}
+.info-box{background:#E8F0FB;border:1px solid #B8CEFA;border-radius:10px;padding:14px 16px;font-size:13px;color:#1A3A6C;margin:12px 0;display:flex;gap:10px}
+.success-box{background:#EAFAF0;border:1px solid #A8DEB8;border-radius:10px;padding:14px 16px;font-size:13px;color:#1A4A2A;margin:12px 0;display:flex;gap:10px}
+
+/* Folder tree */
+.tree{background:#0D1117;color:#E6EDF3;border-radius:10px;padding:16px 20px;font-family:var(--mono);font-size:12.5px;line-height:1.9;margin:12px 0}
+.tree .dir{color:#79C0FF}
+.tree .file{color:#A5D6FF}
+.tree .comment{color:#8B949E}
+
+/* Table */
+table{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0}
+th{text-align:left;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:8px 12px;border-bottom:2px solid var(--border)}
+td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--chip)}
+
+/* Design tokens */
+.swatch{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
+.swatch-item{display:flex;align-items:center;gap:8px;font-size:12px}
+.swatch-dot{width:28px;height:28px;border-radius:8px;border:1px solid rgba(0,0,0,0.08);flex-shrink:0}
+
+/* Progress bar */
+.progress-wrap{margin:14px 0}
+.progress-label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px}
+.progress-bar{height:8px;background:var(--chip);border-radius:100px}
+.progress-fill{height:100%;border-radius:100px;background:var(--navy)}
+
+/* Checklist */
+.checklist{display:flex;flex-direction:column;gap:8px;margin:12px 0}
+.check-item{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--text)}
+.check-item .icon{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;font-size:10px}
+.check-item.done .icon{background:#E8F5E2;color:var(--sage)}
+.check-item.todo .icon{background:var(--chip);color:var(--muted)}
+.check-item.warn .icon{background:#FFF3E0;color:var(--warn)}
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-label">Our Table · Dev Handoff</div>
+  <div class="cover-title">React Native Build</div>
+  <div class="cover-sub">Task list & reference for the RN scaffold and first screens</div>
+  <div class="cover-chips">
+    <span class="cover-chip">Windows 11 + VS Code</span>
+    <span class="cover-chip">Expo + TypeScript</span>
+    <span class="cover-chip gold">⚠️ Scrap old project — start fresh</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- CONTEXT -->
+  <div class="section">
+    <div class="section-label">Background</div>
+    <div class="section-title">Why We're Starting Fresh</div>
+    <div class="card">
+      <p style="font-size:13px;color:var(--muted);line-height:1.8;margin-bottom:14px">The previous OurTableApp project at <code>C:\Users\Will\OneDrive\Documents\Claude\Projects\OurTableApp</code> accumulated broken dependencies from failed fix attempts. Untangling that is slower than a clean scaffold — especially since no real screen code was built yet.</p>
+      <div class="checklist">
+        <div class="check-item done"><div class="icon">✓</div><span><strong>Old project had:</strong> broken babel-preset-expo, node_modules conflicts, no real screens yet</span></div>
+        <div class="check-item done"><div class="icon">✓</div><span><strong>New scaffold gives:</strong> guaranteed clean start, correct deps from the jump, TypeScript from day one</span></div>
+        <div class="check-item warn"><div class="icon">!</div><span><strong>Move project OUT of OneDrive</strong> — OneDrive syncing fights with node_modules and causes random errors. Use Desktop or Documents (not OneDrive).</span></div>
+      </div>
+    </div>
+
+    <div class="warn-box">
+      <span>⚠️</span>
+      <span><strong>Delete or archive</strong> the old OurTableApp folder before starting. Don't try to fix it — it'll cause confusion.</span>
+    </div>
+  </div>
+
+  <!-- TASK 1 — SCAFFOLD -->
+  <div class="section">
+    <div class="section-label">Task 1 · Priority</div>
+    <div class="section-title">Clean Expo Scaffold</div>
+
+    <div class="task">
+      <div class="task-header">
+        <div class="task-num priority">1</div>
+        <div class="task-info">
+          <div class="task-title">Create the new project</div>
+          <div class="task-desc">Run the Expo TypeScript template — this is the ONLY setup step. Takes ~5 minutes.</div>
+        </div>
+        <span class="task-badge badge-start">Start here</span>
+      </div>
+      <div class="task-body open">
+        <div class="warn-box">
+          <span>⚠️</span>
+          <span>Make sure you're NOT inside OneDrive when you run this. Recommended location: <code>C:\Users\Will\Desktop\OurTableApp</code> or <code>C:\Users\Will\Documents\OurTableApp</code></span>
+        </div>
+        <div class="steps">
+          <div class="step"><div class="step-dot">1</div><div class="step-text"><strong>Open VS Code</strong> → open a terminal (<code>Ctrl + `</code>)</div></div>
+          <div class="step"><div class="step-dot">2</div><div class="step-text"><strong>Navigate to your target folder</strong> (NOT OneDrive):<br><code>cd C:\Users\Will\Desktop</code></div></div>
+          <div class="step"><div class="step-dot">3</div><div class="step-text"><strong>Run the scaffold command:</strong></div></div>
+        </div>
+<pre><span class="comment"># Creates a fresh Expo TypeScript project</span>
+<span class="cmd">npx create-expo-app</span> <span class="str">OurTableApp</span> <span class="cmd">--template</span> <span class="str">blank-typescript</span></pre>
+        <div class="steps">
+          <div class="step"><div class="step-dot">4</div><div class="step-text"><strong>Navigate into the project:</strong><br><code>cd OurTableApp</code></div></div>
+          <div class="step"><div class="step-dot">5</div><div class="step-text"><strong>Install dependencies:</strong></div></div>
+        </div>
+<pre><span class="cmd">npm install</span></pre>
+        <div class="steps">
+          <div class="step"><div class="step-dot">6</div><div class="step-text"><strong>Start the dev server:</strong></div></div>
+        </div>
+<pre><span class="cmd">npx expo start</span></pre>
+        <div class="steps">
+          <div class="step"><div class="step-dot">7</div><div class="step-text"><strong>On your iPhone:</strong> open Expo Go → scan the QR code in the terminal</div></div>
+        </div>
+        <div class="success-box">
+          <span>✅</span>
+          <span>You should see a white screen that says "Open up App.tsx to start working on your app!" — that means it's working.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="task">
+      <div class="task-header">
+        <div class="task-num priority">2</div>
+        <div class="task-info">
+          <div class="task-title">Set up the folder structure</div>
+          <div class="task-desc">Create the src/ directory layout before writing any screens.</div>
+        </div>
+        <span class="task-badge badge-now">After scaffold</span>
+      </div>
+      <div class="task-body open">
+        <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Create this structure inside the project folder. You can do it manually in VS Code or paste the bash command below.</p>
+        <div class="tree">
+<span class="dir">OurTableApp/</span>
+├── <span class="dir">src/</span>
+│   ├── <span class="dir">screens/</span>          <span class="comment"># one file per screen</span>
+│   ├── <span class="dir">components/</span>       <span class="comment"># shared UI (buttons, cards, etc)</span>
+│   ├── <span class="dir">navigation/</span>       <span class="comment"># stack + tab navigators</span>
+│   ├── <span class="dir">theme/</span>            <span class="comment"># colors, typography, spacing</span>
+│   └── <span class="dir">hooks/</span>            <span class="comment"># custom hooks (later)</span>
+├── <span class="file">App.tsx</span>               <span class="comment"># entry point</span>
+├── <span class="file">package.json</span>
+└── <span class="file">tsconfig.json</span>
+        </div>
+<pre><span class="comment"># Run this in the project root to create all folders at once</span>
+<span class="cmd">mkdir</span> <span class="path">src src/screens src/components src/navigation src/theme src/hooks</span></pre>
+      </div>
+    </div>
+
+    <div class="task">
+      <div class="task-header">
+        <div class="task-num priority">3</div>
+        <div class="task-info">
+          <div class="task-title">Install core dependencies</div>
+          <div class="task-desc">Navigation, icons, and safe area handling — the three things every screen needs.</div>
+        </div>
+        <span class="task-badge badge-now">After folders</span>
+      </div>
+      <div class="task-body open">
+<pre><span class="comment"># Navigation (React Navigation)</span>
+<span class="cmd">npm install</span> <span class="str">@react-navigation/native @react-navigation/stack @react-navigation/bottom-tabs</span>
+<span class="cmd">npx expo install</span> <span class="str">react-native-screens react-native-safe-area-context react-native-gesture-handler</span>
+
+<span class="comment"># Icons</span>
+<span class="cmd">npx expo install</span> <span class="str">@expo/vector-icons</span>
+
+<span class="comment"># Fonts (Playfair Display + Inter — matches the design system)</span>
+<span class="cmd">npx expo install</span> <span class="str">expo-font @expo-google-fonts/inter @expo-google-fonts/playfair-display</span></pre>
+        <div class="info-box">
+          <span>ℹ️</span>
+          <span>Use <code>npx expo install</code> (not <code>npm install</code>) for Expo packages — it picks the version that's compatible with your Expo SDK automatically.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="task">
+      <div class="task-header">
+        <div class="task-num priority">4</div>
+        <div class="task-info">
+          <div class="task-title">Create the theme file</div>
+          <div class="task-desc">Port the design tokens from the prototype into a TypeScript theme object — this ensures the RN app matches the prototype exactly.</div>
+        </div>
+        <span class="task-badge badge-now">After deps</span>
+      </div>
+      <div class="task-body open">
+        <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Create <code>src/theme/index.ts</code> with these exact values:</p>
+<pre><span class="comment">// src/theme/index.ts</span>
+export const colors = {
+  primary:    <span class="str">'#1B3A5C'</span>,  <span class="comment">// Navy</span>
+  secondary:  <span class="str">'#5A8A52'</span>,  <span class="comment">// Sage green</span>
+  gold:       <span class="str">'#C9A84C'</span>,  <span class="comment">// Gold accent</span>
+  bg:         <span class="str">'#F5F8FA'</span>,  <span class="comment">// Cream background</span>
+  card:       <span class="str">'#FFFFFF'</span>,
+  text:       <span class="str">'#1A2E3D'</span>,
+  muted:      <span class="str">'#6B7E8F'</span>,
+  border:     <span class="str">'#D8E2EC'</span>,
+  chip:       <span class="str">'#EBF0F5'</span>,
+  error:      <span class="str">'#B04040'</span>,
+  warning:    <span class="str">'#C4884A'</span>,
+  success:    <span class="str">'#5A8A52'</span>,
+};
+
+export const fonts = {
+  sans:   <span class="str">'Inter_400Regular'</span>,
+  sansBold:  <span class="str">'Inter_700Bold'</span>,
+  serif: <span class="str">'PlayfairDisplay_700Bold'</span>,
+};
+
+export const spacing = {
+  xs: 4, sm: 8, md: 12, lg: 16, xl: 20, xxl: 28,
+};
+
+export const radius = {
+  sm: 8, md: 12, lg: 16, xl: 20, pill: 100,
+};</pre>
+        <div class="info-box">
+          <span>ℹ️</span>
+          <span>These exact values come from the prototype's design system. Every screen in the prototype uses these tokens — matching them here means a pixel-perfect translation.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="task">
+      <div class="task-header">
+        <div class="task-num priority">5</div>
+        <div class="task-info">
+          <div class="task-title">Wire up basic navigation</div>
+          <div class="task-desc">Create a stub App.tsx with the bottom tab navigator and placeholder screens — get the nav shell running before building any real screens.</div>
+        </div>
+        <span class="task-badge badge-now">After theme</span>
+      </div>
+      <div class="task-body open">
+<pre><span class="comment">// App.tsx — minimal working nav shell</span>
+import { NavigationContainer } from <span class="str">'@react-navigation/native'</span>;
+import { createBottomTabNavigator } from <span class="str">'@react-navigation/bottom-tabs'</span>;
+import { View, Text } from <span class="str">'react-native'</span>;
+import { colors } from <span class="str">'./src/theme'</span>;
+
+const Tab = createBottomTabNavigator();
+
+const Stub = ({ name }: { name: string }) => (
+  &lt;View style={{ flex:1, alignItems:'center', justifyContent:'center', background:colors.bg }}&gt;
+    &lt;Text style={{ color:colors.text }}&gt;{name}&lt;/Text&gt;
+  &lt;/View&gt;
+);
+
+export default function App() {
+  return (
+    &lt;NavigationContainer&gt;
+      &lt;Tab.Navigator screenOptions={{ tabBarActiveTintColor: colors.primary }}&gt;
+        &lt;Tab.Screen name=<span class="str">"Home"</span> component={() =&gt; &lt;Stub name=<span class="str">"Home"</span> /&gt;} /&gt;
+        &lt;Tab.Screen name=<span class="str">"Search"</span> component={() =&gt; &lt;Stub name=<span class="str">"Search"</span> /&gt;} /&gt;
+        &lt;Tab.Screen name=<span class="str">"Fridge"</span> component={() =&gt; &lt;Stub name=<span class="str">"Fridge"</span> /&gt;} /&gt;
+        &lt;Tab.Screen name=<span class="str">"List"</span> component={() =&gt; &lt;Stub name=<span class="str">"List"</span> /&gt;} /&gt;
+        &lt;Tab.Screen name=<span class="str">"Me"</span> component={() =&gt; &lt;Stub name=<span class="str">"Me"</span> /&gt;} /&gt;
+      &lt;/Tab.Navigator&gt;
+    &lt;/NavigationContainer&gt;
+  );
+}</pre>
+        <div class="success-box">
+          <span>✅</span>
+          <span>Goal: see 5 tabs at the bottom of your phone with placeholder screens. Once this works, the scaffold is complete.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TASK 2 — VERIFY -->
+  <div class="section">
+    <div class="section-label">Task 2</div>
+    <div class="section-title">Verify Everything Works</div>
+
+    <div class="card">
+      <div class="card-title">✅ Scaffold success checklist</div>
+      <div class="card-sub">Check all of these before moving on to real screens</div>
+      <div class="checklist">
+        <div class="check-item todo"><div class="icon">○</div><span>App loads on phone via Expo Go — no red error screen</span></div>
+        <div class="check-item todo"><div class="icon">○</div><span>5 bottom tabs visible and tappable</span></div>
+        <div class="check-item todo"><div class="icon">○</div><span>TypeScript — VS Code shows no red squiggles in App.tsx</span></div>
+        <div class="check-item todo"><div class="icon">○</div><span>Hot reload works — change text in App.tsx, phone updates automatically</span></div>
+        <div class="check-item todo"><div class="icon">○</div><span>Theme file imports cleanly — no errors on <code>import { colors } from './src/theme'</code></span></div>
+      </div>
+    </div>
+
+    <div class="warn-box">
+      <span>⚠️</span>
+      <span><strong>If you get a red error screen:</strong> screenshot it and bring it to the next session. Don't try to fix it alone — the error message tells us exactly what's wrong.</span>
+    </div>
+  </div>
+
+  <!-- TASK 3 — NEXT SCREENS -->
+  <div class="section">
+    <div class="section-label">Task 3 · After scaffold is verified</div>
+    <div class="section-title">First Real Screen — Home</div>
+
+    <div class="card">
+      <div class="card-title">🏠 Build order (once scaffold is working)</div>
+      <div class="card-sub">Do these in order — each one builds on the last</div>
+      <table>
+        <thead>
+          <tr><th>#</th><th>Screen</th><th>Why this order</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td><strong>Home screen</strong></td><td>Establishes base layout pattern, recipe card component used everywhere</td></tr>
+          <tr><td>2</td><td><strong>Recipe Detail</strong></td><td>Most complex screen — gets the hard stuff done early</td></tr>
+          <tr><td>3</td><td><strong>Grocery List</strong></td><td>Simplest data screen — good for testing state management patterns</td></tr>
+          <tr><td>4</td><td><strong>Fridge / Pantry</strong></td><td>Camera integration — needs Expo Camera installed separately</td></tr>
+          <tr><td>5</td><td><strong>Auth / Onboarding</strong></td><td>Build last — easier once all patterns are established</td></tr>
+        </tbody>
+      </table>
+      <div class="info-box" style="margin-top:14px">
+        <span>ℹ️</span>
+        <span>The prototype at <strong>grayson039.github.io/ourtable/our-table-prototype.html</strong> is the pixel-perfect design reference for every screen. Open it side by side while building.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- REFERENCE -->
+  <div class="section">
+    <div class="section-label">Reference</div>
+    <div class="section-title">Design Tokens & Key Links</div>
+
+    <div class="card">
+      <div class="card-title">Color palette</div>
+      <div class="swatch">
+        <div class="swatch-item"><div class="swatch-dot" style="background:#1B3A5C"></div>#1B3A5C — Navy (primary)</div>
+        <div class="swatch-item"><div class="swatch-dot" style="background:#5A8A52"></div>#5A8A52 — Sage (secondary)</div>
+        <div class="swatch-item"><div class="swatch-dot" style="background:#C9A84C"></div>#C9A84C — Gold (accent)</div>
+        <div class="swatch-item"><div class="swatch-dot" style="background:#F5F8FA;border:1px solid #D8E2EC"></div>#F5F8FA — Cream (bg)</div>
+        <div class="swatch-item"><div class="swatch-dot" style="background:#1A2E3D"></div>#1A2E3D — Text</div>
+        <div class="swatch-item"><div class="swatch-dot" style="background:#6B7E8F"></div>#6B7E8F — Muted</div>
+        <div class="swatch-item"><div class="swatch-dot" style="background:#D8E2EC"></div>#D8E2EC — Border</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Typography</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:10px">Two fonts — consistent with the prototype</div>
+      <table>
+        <tr><td><strong>Display / headings</strong></td><td>Playfair Display 700</td><td><code>PlayfairDisplay_700Bold</code></td></tr>
+        <tr><td><strong>Body / UI</strong></td><td>Inter 400 / 600 / 700</td><td><code>Inter_400Regular</code> etc.</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Key links</div>
+      <table>
+        <tr><td><strong>Prototype</strong></td><td><a href="https://grayson039.github.io/ourtable/our-table-prototype.html" style="color:var(--navy-mid)">grayson039.github.io/ourtable/our-table-prototype.html</a></td></tr>
+        <tr><td><strong>GitHub repo</strong></td><td><a href="https://github.com/Grayson039/ourtable" style="color:var(--navy-mid)">github.com/Grayson039/ourtable</a></td></tr>
+        <tr><td><strong>Expo docs</strong></td><td><a href="https://docs.expo.dev" style="color:var(--navy-mid)">docs.expo.dev</a></td></tr>
+        <tr><td><strong>React Navigation</strong></td><td><a href="https://reactnavigation.org/docs/getting-started" style="color:var(--navy-mid)">reactnavigation.org/docs/getting-started</a></td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Dietary & Allergy options (for onboarding screen)</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:10px">Match these exactly — same as the prototype</div>
+      <p style="font-size:13px;margin-bottom:6px"><strong>Dietary:</strong> None · Vegetarian · Vegan · Pescatarian · Gluten-Free · Dairy-Free · Nut-Free · Paleo · Keto · Halal · Kosher</p>
+      <p style="font-size:13px"><strong>Allergies (FDA Big 9):</strong> Peanuts · Tree Nuts · Eggs · Soy · Dairy/Milk · Wheat · Shellfish · Fish · Sesame</p>
+    </div>
+  </div>
+
+  <!-- TROUBLESHOOTING -->
+  <div class="section">
+    <div class="section-label">Troubleshooting</div>
+    <div class="section-title">Common Issues</div>
+
+    <div class="card">
+      <table>
+        <thead><tr><th>Error</th><th>Fix</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>babel-preset-expo</code> not found</td>
+            <td>Run <code>npm install babel-preset-expo --save-dev</code> then <code>npx expo start --clear</code></td>
+          </tr>
+          <tr>
+            <td>Metro bundler error / cache issue</td>
+            <td><code>npx expo start --clear</code> — clears the Metro cache</td>
+          </tr>
+          <tr>
+            <td>TypeScript errors on navigation types</td>
+            <td>Normal at first — add <code>// @ts-ignore</code> above the line and come back to type it properly later</td>
+          </tr>
+          <tr>
+            <td>Expo Go says "incompatible SDK"</td>
+            <td>Update Expo Go on your phone from the App Store — it needs to match the SDK version</td>
+          </tr>
+          <tr>
+            <td>Random dependency errors after npm install</td>
+            <td>You're probably in OneDrive. Move the folder out of OneDrive and run <code>npm install</code> again</td>
+          </tr>
+          <tr>
+            <td>Port already in use</td>
+            <td><code>npx expo start --port 8082</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div style="text-align:center;font-size:12px;color:var(--muted);padding:20px 0 40px">
+    Our Table · RN Dev Handoff · Built by Danhausen 💀 · 2025
+  </div>
+
+</div>
+</body>
+</html>
