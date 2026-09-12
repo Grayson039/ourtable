@@ -6,6 +6,7 @@
     "@expo-google-fonts/inter": "^0.4.2",
     "@expo-google-fonts/playfair-display": "^0.4.2",
     "@expo/ui": "~56.0.14",
+    "@expo/vector-icons": "^15.0.2",
     "@supabase/supabase-js": "^2.106.2",
     "expo": "~56.0.5",
     "expo-camera": "~56.0.7",

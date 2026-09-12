@@ -12,7 +12,7 @@ const { height } = Dimensions.get('window');
 export default function WelcomeScreen() {
   return (
     <LinearGradient
-      colors={['#0F2A48', '#1B3A5C', '#2E6DA4']}
+      colors={['#4A0E1A', '#8E1B2E', '#FC3E57']}
       start={{ x: 0.1, y: 0 }}
       end={{ x: 0.9, y: 1 }}
       style={styles.gradient}
