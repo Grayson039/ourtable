@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "Our Table",
+    "slug": "our-table",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "our-table",
+    "userInterfaceStyle": "automatic",
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.ourtable.app"
+    },
+    "android": {
+      "package": "com.ourtable.app"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "OurTable uses your camera to scan fridge contents and import recipes from social media."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
