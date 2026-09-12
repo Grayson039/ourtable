@@ -16,6 +16,10 @@
 - Phase 4: ✅ Complete (all screens scaffolded)
 - Phase 5: ✅ Complete — Supabase backend fully wired
 - Phase 5.5: ✅ Complete — repo hygiene fixed: added root `.gitignore`, deleted the dead `screens/` scaffold, moved the whole project out of OneDrive-synced storage (see below), relocked palette to coral/sage/cream, `screens-new/` committed to git for the first time (it had never been tracked before)
+- Phase 5.6: ✅ Complete — **the app was booted for the first time ever** and was completely broken (see Known
+  Issues below, all now fixed): nested duplicate folders flattened, missing `@expo/vector-icons` dependency
+  installed, hardcoded old-palette hex literals re-hued. Verified end-to-end in Expo web: welcome →
+  create-account render correctly with the real coral/cream palette, icons, and Playfair/Inter fonts.
 - Phase 6: 🔄 Next — EAS Build & device testing (Michelle's phone)
 - Phase 7: 🔒 iOS build with Sako & KC
 - Phase 8: 🔒 Case Study & Portfolio Readiness
@@ -75,18 +79,13 @@ The old `screens/` scaffold (broken, DO NOT USE) has been deleted entirely — `
 screens-new/
 ├── src/
 │   ├── app/              ← Expo Router root (auto-detected via top-level src/ dir)
-│   │   ├── index.tsx     ← ⚠️ unused default Expo template route, see Known Issues
-│   │   ├── explore.tsx   ← ⚠️ unused default Expo template route, see Known Issues
-│   │   ├── _layout.tsx
-│   │   └── app/          ← ⚠️ the REAL app lives one level down, under /app/...
-│   │       ├── (auth)/
-│   │       ├── (tabs)/
-│   │       ├── recipe/[id].tsx
-│   │       └── add-recipe/
-│   ├── components/       ← RecipeCard, GroceryItem, Button, Input
-│   │                        ⚠️ also nested: components/components/ — duplicate, needs flattening
-│   ├── constants/         ← ⚠️ TWO theme.ts files, see Known Issues
-│   │   └── constants/     ← the REAL theme.ts + data.ts live here
+│   │   ├── _layout.tsx   ← AuthProvider + auth-gated routing
+│   │   ├── (auth)/       ← welcome, sign-in, create-account, dietary-prefs, household-setup
+│   │   ├── (tabs)/       ← index, search, recipe-book, fridge, grocery, profile
+│   │   ├── recipe/[id].tsx
+│   │   └── add-recipe/
+│   ├── components/       ← RecipeCard, GroceryItem, ui/Button, ui/Input
+│   ├── constants/        ← theme.ts (locked palette), data.ts (mock data)
 │   ├── context/          ← AuthContext.tsx
 │   ├── lib/              ← supabase.ts, recipes.ts, grocery.ts, fridge.ts, household.ts
 │   └── types/            ← index.ts (full DB type map)
@@ -102,19 +101,24 @@ screens-new/
 
 ---
 
-## Known Issues (found 2026-09-12, not yet fixed)
+## Known Issues — RESOLVED 2026-09-12
+
+The app had never been successfully run. First boot (Expo web) surfaced three stacked bugs, all fixed:
 
 1. **Duplicate/nested folders from a messy merge** — `src/app/app/`, `src/components/components/`,
-   `src/constants/constants/` all exist one level deeper than expected. Every screen currently imports from
-   the nested paths (e.g. `@/constants/theme` resolving to `src/constants/theme.ts`, NOT the nested
-   `src/constants/constants/theme.ts` where the real design system lives — **this needs verifying against a
-   running build**, since if the alias really resolves to the shallow file, every screen's colors/spacing/radius
-   tokens are silently undefined).
-2. **`src/app/index.tsx` and `src/app/explore.tsx`** are the unused default Expo Router template routes
-   (landing on `/` currently shows the Expo boilerplate, not the Our Table welcome screen) — the real app only
-   exists under `/app/...`. Needs a root redirect or a restructure so `src/app/` IS the real route tree.
-3. Should NOT block Phase 6, but should be fixed before Phase 7 (external iOS build with Sako & KC) so they
-   aren't inheriting a confusing structure.
+   `src/constants/constants/` all existed one level deeper than every screen's `@/...` imports expected, while
+   stray default-Expo-template files (`index.tsx`, `explore.tsx`, `ThemedText`, `app-tabs`, a near-empty
+   `theme.ts`, etc.) sat at the shallow paths those imports actually resolved to. Fixed by moving the real files
+   up a level and deleting the unused template leftovers — no import statements needed to change.
+2. **Missing dependency** — every screen imports `Ionicons` from `@expo/vector-icons`, which was never in
+   `package.json`. Installed via `npx expo install @expo/vector-icons`.
+3. **Hardcoded old-palette hex literals** — a few screens (welcome, fridge gradients; household-setup/profile
+   avatar colors; RecipeCard category colors) had the old navy/gold hex values written directly instead of
+   going through `theme.ts`, so the palette relock in Phase 5.5 didn't reach them. Re-hued to fit
+   coral/sage/cream, keeping the multi-hue variety for avatars/categories rather than forcing everything to a
+   single accent color.
+
+Verified end-to-end in Expo web (`npm run web`): welcome → create-account renders correctly.
 
 ---
 
