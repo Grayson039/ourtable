@@ -12,7 +12,7 @@ import { createHousehold } from '@/lib/household';
 
 type Member = { name: string; avatar: string };
 
-const AVATAR_COLORS = ['#FC3E57','#5BC18A','#E8A33D','#8E4B6B','#C1272D','#2F7A56'];
+const AVATAR_COLORS = ['#3D7A8A','#A33636','#E8A33D','#7A5C7E','#1F4A54','#B9762A'];
 
 export default function HouseholdSetupScreen() {
   const { user, refreshProfile } = useAuth();

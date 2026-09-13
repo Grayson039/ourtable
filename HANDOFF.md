@@ -1,6 +1,6 @@
 # OUR TABLE — Session Handoff
 
-*Last updated: 2026-09-12*
+*Last updated: 2026-09-13*
 
 ---
 
@@ -15,11 +15,16 @@
 - Phase 1–3: ✅ Complete (ideation, UX, design)
 - Phase 4: ✅ Complete (all screens scaffolded)
 - Phase 5: ✅ Complete — Supabase backend fully wired
-- Phase 5.5: ✅ Complete — repo hygiene fixed: added root `.gitignore`, deleted the dead `screens/` scaffold, moved the whole project out of OneDrive-synced storage (see below), relocked palette to coral/sage/cream, `screens-new/` committed to git for the first time (it had never been tracked before)
+- Phase 5.5: ✅ Complete — repo hygiene fixed: added root `.gitignore`, deleted the dead `screens/` scaffold, moved the whole project out of OneDrive-synced storage (see below), `screens-new/` committed to git for the first time (it had never been tracked before)
 - Phase 5.6: ✅ Complete — **the app was booted for the first time ever** and was completely broken (see Known
   Issues below, all now fixed): nested duplicate folders flattened, missing `@expo/vector-icons` dependency
-  installed, hardcoded old-palette hex literals re-hued. Verified end-to-end in Expo web: welcome →
-  create-account render correctly with the real coral/cream palette, icons, and Playfair/Inter fonts.
+  installed. Verified end-to-end in Expo web: welcome → create-account render correctly with icons and
+  Playfair/Inter fonts.
+- Phase 5.7: ✅ Complete — the real logo arrived. Palette relocked from the coral/sage placeholder to the
+  logo's actual colors: teal `#3D7A8A` / brick `#A33636` / charcoal `#3B4653` / cream `#F4EFDC`. Updated in
+  `constants/theme.ts` (key names kept stable — only values changed) plus every hardcoded gradient/avatar/
+  category hex across welcome, fridge, household-setup, profile, and RecipeCard. Same relock applied to the
+  web app (`C:\Users\Will\OurTable`) for consistency — both frontends share one palette.
 - Phase 6: 🔄 Next — EAS Build & device testing (Michelle's phone)
 - Phase 7: 🔒 iOS build with Sako & KC
 - Phase 8: 🔒 Case Study & Portfolio Readiness

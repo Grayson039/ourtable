@@ -9,7 +9,7 @@ import { Colors, FontSize, Spacing, Radius, Shadow } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
 import { updateProfile } from '@/lib/household';
 
-const AVATAR_COLORS = ['#FC3E57', '#5BC18A', '#E8A33D', '#8E4B6B'];
+const AVATAR_COLORS = ['#3D7A8A', '#A33636', '#E8A33D', '#7A5C7E'];
 
 type SettingRowProps = {
   icon: keyof typeof Ionicons.glyphMap;

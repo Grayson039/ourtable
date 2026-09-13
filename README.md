@@ -37,10 +37,10 @@ https://www.figma.com/design/Vs0zU1mofREJsOzzmMT65t/Kitchen-Bandits-%E2%80%94-Ap
 
 | Token | Hex |
 |---|---|
-| Coral (primary) | `#FC3E57` |
-| Sage (secondary/success) | `#5BC18A` |
-| Ink (black) | `#000000` |
-| Cream (background) | `#FAF7F0` |
+| Teal (primary) | `#3D7A8A` |
+| Brick (secondary/accent) | `#A33636` |
+| Charcoal (ink/text) | `#3B4653` |
+| Cream (background) | `#F4EFDC` |
 | Card (white) | `#FFFFFF` |
 
 ---
@@ -55,6 +55,8 @@ https://www.figma.com/design/Vs0zU1mofREJsOzzmMT65t/Kitchen-Bandits-%E2%80%94-Ap
 | 4 | React Native Build | ✅ Complete |
 | 5 | Backend Integration (Supabase) | ✅ Complete |
 | 5.5 | Repo hygiene (gitignore, dead `screens/` removed, moved out of OneDrive) | ✅ Complete |
+| 5.6 | First real boot — flattened nested folders, installed missing icon dependency | ✅ Complete |
+| 5.7 | Palette relocked to match the final logo (teal/brick/charcoal/cream) | ✅ Complete |
 | 6 | EAS Build & Device Testing | 🔄 Next |
 | 7 | iOS Build with Sako & KC | 🔒 Locked |
 | 8 | Case Study & Portfolio Readiness | 🔒 Locked |

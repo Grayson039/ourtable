@@ -399,7 +399,7 @@ function CanMakeCard({ recipe, allFridgeItems }: { recipe: RecipeWithIngs; allFr
       activeOpacity={0.85}
     >
       <LinearGradient
-        colors={['#B8202F', '#FC3E57']}
+        colors={['#2C5D69', '#3D7A8A']}
         style={canMake.thumb}
       >
         <Text style={{ fontSize: 28 }}>🍽️</Text>

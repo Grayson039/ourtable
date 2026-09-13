@@ -8,12 +8,12 @@ import { Recipe } from '@/types';
 // ─── Derived helpers ──────────────────────────────────────────────────────────
 
 const CATEGORY_COLORS: Record<string, [string, string]> = {
-  Dinner:    ['#7A1424', '#FC3E57'],
+  Dinner:    ['#12333C', '#3D7A8A'],
   Breakfast: ['#E8A33D', '#B9762A'],
-  Lunch:     ['#5BC18A', '#2F7A56'],
-  Dessert:   ['#C1272D', '#7A1620'],
+  Lunch:     ['#4E9B72', '#2F7A56'],
+  Dessert:   ['#A33636', '#7A1620'],
   Snacks:    ['#8E4B6B', '#5C2F45'],
-  default:   ['#FC3E57', '#5BC18A'],
+  default:   ['#3D7A8A', '#4E9B72'],
 };
 
 export function categoryColors(category: string | null): [string, string] {

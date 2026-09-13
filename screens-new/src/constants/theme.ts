@@ -1,47 +1,47 @@
 // ─────────────────────────────────────────────────────────────
 // Our Table Design System — Theme Constants
-// Locked palette: Coral #FC3E57 · Sage #5BC18A · Ink #000000 ·
-// Cream #FAF7F0 · Card #FFFFFF. Key names kept stable so every
-// consuming screen/component needed no changes — only the values
-// moved from the old navy/gold system to the locked palette.
+// Locked palette (matches the logo mark): Teal #3D7A8A · Brick #A33636 ·
+// Charcoal #3B4653 · Cream #F4EFDC · Card #FFFFFF. Key names kept stable
+// so every consuming screen/component needed no changes — only the
+// values moved from the coral/sage system to the logo's palette.
 // ─────────────────────────────────────────────────────────────
 
 export const Colors = {
-  navy:        '#FC3E57', // primary accent (coral) — CTAs, active states, icons
-  navyMid:     '#D93450', // deeper coral — secondary links, subtext accents
-  navyLight:   '#FFD4DA', // pale coral tint — subtle highlights/badges
-  gold:        '#FC3E57', // ratings/premium accent, kept inside the locked palette
-  sage:        '#5BC18A', // success / positive — unchanged in spirit, new hex
+  navy:        '#3D7A8A', // primary accent (teal, from the logo dome) — CTAs, active states, icons
+  navyMid:     '#2C5D69', // deeper teal — secondary links, subtext accents
+  navyLight:   '#CFE7EB', // pale teal tint — subtle highlights/badges
+  gold:        '#E8A33D', // ratings/premium accent — kept amber, red doesn't read well for star ratings
+  sage:        '#4E9B72', // success / positive — distinct green, kept apart from teal for clear signal
 
   // Light surfaces
-  bg:          '#FAF7F0', // cream
+  bg:          '#F4EFDC', // cream (matches logo background)
   card:        '#FFFFFF',
-  text:        '#000000', // ink
+  text:        '#3B4653', // charcoal (matches logo table/wordmark) — replaces pure black
   muted:       '#6E6A62', // warm neutral gray for secondary text (not brand-locked)
-  border:      '#E5E1D8',
-  chip:        '#F1EDE3',
+  border:      '#DDD6C0',
+  chip:        '#EAE3CC',
   chipText:    '#4A4A44',
   input:       '#FFFFFF',
 
   // Dark surfaces
   bgDark:      '#141414',
   cardDark:    '#1F1F1F',
-  textDark:    '#FAF7F0',
+  textDark:    '#F4EFDC',
   mutedDark:   '#B5B0A6',
   borderDark:  'rgba(255,255,255,0.15)',
   chipDark:    '#262626',
 
   // Semantic
-  success:     '#5BC18A', // = sage
+  success:     '#4E9B72', // = sage
   warning:     '#E8A33D',
-  error:       '#C1272D',
+  error:       '#A33636', // = brick (matches the logo house)
 
   // Overlays
   overlay:     'rgba(0,0,0,0.52)',
   scrim:       'rgba(0,0,0,0.28)',
 
   // Tab bar
-  tabActive:   '#FC3E57', // coral
+  tabActive:   '#3D7A8A', // teal
   tabInactive: '#B8B0A6',
 } as const;
 
@@ -78,14 +78,14 @@ export const FontSize = {
 
 export const Shadow = {
   sm: {
-    shadowColor: '#FC3E57',
+    shadowColor: '#3D7A8A',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.06,
     shadowRadius: 4,
     elevation: 2,
   },
   md: {
-    shadowColor: '#FC3E57',
+    shadowColor: '#3D7A8A',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.10,
     shadowRadius: 8,

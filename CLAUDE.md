@@ -43,13 +43,15 @@ HTML prototypes in this repo are earlier-era references only.
 
 | Token | Hex |
 |---|---|
-| Coral (primary) | `#FC3E57` |
-| Sage (secondary/success) | `#5BC18A` |
-| Ink (black) | `#000000` |
-| Cream (background) | `#FAF7F0` |
+| Teal (primary) | `#3D7A8A` |
+| Brick (secondary/accent) | `#A33636` |
+| Charcoal (ink/text) | `#3B4653` |
+| Cream (background) | `#F4EFDC` |
 | Card (white) | `#FFFFFF` |
 
-Defined in `screens-new/src/constants/constants/theme.ts` — see note under "Known Issue" below about the import path.
+Defined in `screens-new/src/constants/theme.ts`. Matches the actual logo mark (teal cloche, brick-red house,
+charcoal table/wordmark, cream background) — this replaced an earlier coral/sage placeholder palette on
+2026-09-13 once the real logo was finalized.
 
 ---
 
@@ -62,7 +64,9 @@ Defined in `screens-new/src/constants/constants/theme.ts` — see note under "Kn
 | 3 | UI Design & Asset Creation | ✅ Complete |
 | 4 | React Native Build | ✅ Complete |
 | 5 | Backend Integration (Supabase) | ✅ Complete |
-| 5.5 | Repo hygiene: gitignore, dead `screens/` removed, moved out of OneDrive, palette relocked to Our Table | ✅ Complete |
+| 5.5 | Repo hygiene: gitignore, dead `screens/` removed, moved out of OneDrive | ✅ Complete |
+| 5.6 | First real boot: flattened nested app/app, components/components, constants/constants; installed missing @expo/vector-icons | ✅ Complete |
+| 5.7 | Palette relocked to match the final logo (teal/brick/charcoal/cream, replacing the coral/sage placeholder) | ✅ Complete |
 | 6 | EAS Build & Device Testing | 🔄 Next |
 | 7 | iOS Build with Sako & KC | 🔒 Locked |
 | 8 | Case Study & Portfolio Readiness | 🔒 Locked |
@@ -88,13 +92,10 @@ fighting git/npm over the node_modules tree. Same GitHub remote (`Grayson039/our
 
 ---
 
-## Known Issue
+## Known Issues — none currently open
 
-Every screen imports `Colors`/`Radius`/`FontSize`/`Shadow` from `@/constants/theme`, which per `tsconfig.json`
-(`"@/*": ["./src/*"]`) resolves to `src/constants/theme.ts` — a near-empty leftover Expo template file, NOT
-`src/constants/constants/theme.ts` where the real design system (and the locked palette) actually lives. This
-needs verifying against a running build and fixing (most likely: consolidate to one theme file at the
-alias-correct path) before relying on any color/spacing token rendering correctly.
+The nested-folder/theme-resolution bug that used to live here was fixed 2026-09-12 (see Phase 5.6 history) —
+`src/constants/theme.ts` is the one real theme file now, no duplicate nested copy.
 
 ---
 
