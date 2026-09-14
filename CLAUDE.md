@@ -1,4 +1,4 @@
-# OUR TABLE — Claude Code Project Instructions
+# OURTABLE — Claude Code Project Instructions
 
 *"The recipe app built for your whole household — not just you."*
 
@@ -34,7 +34,7 @@ Production-ready React Native app:
 **Figma — App Screens:**
 https://www.figma.com/design/Vs0zU1mofREJsOzzmMT65t/Kitchen-Bandits-%E2%80%94-App-Screens
 
-(Filed under its working title in Figma — rename the file when convenient. Project name is locked back to **Our Table**.)
+(Filed under its working title in Figma — rename the file when convenient. Project name is locked back to **OurTable**.)
 HTML prototypes in this repo are earlier-era references only.
 
 ---
@@ -133,4 +133,4 @@ The nested-folder/theme-resolution bug that used to live here was fixed 2026-09-
 
 ---
 
-*OUR TABLE · Everyone eats.*
+*OURTABLE · Everyone eats.*

@@ -53,7 +53,7 @@ export default function SignInScreen() {
           {/* Header */}
           <View style={styles.header}>
             <Text style={styles.title}>Welcome back</Text>
-            <Text style={styles.sub}>Sign in to your Our Table account</Text>
+            <Text style={styles.sub}>Sign in to your OurTable account</Text>
           </View>
 
           {/* Form */}

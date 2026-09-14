@@ -1,4 +1,4 @@
-# OUR TABLE — Session Handoff
+# OURTABLE — Session Handoff
 
 *Last updated: 2026-09-13*
 
@@ -6,7 +6,7 @@
 
 ## Start Here
 
-**Tell Claude:** "Continue Our Table. Read HANDOFF.md. We need to do an EAS build to get the app on Michelle's phone."
+**Tell Claude:** "Continue OurTable. Read HANDOFF.md. We need to do an EAS build to get the app on Michelle's phone."
 
 ---
 

@@ -24,7 +24,7 @@ export default function WelcomeScreen() {
           <View style={styles.logoCircle}>
             <Text style={styles.logoEmoji}>🍽️</Text>
           </View>
-          <Text style={styles.logoLabel}>OUR TABLE</Text>
+          <Text style={styles.logoLabel}>OurTable</Text>
         </View>
 
         {/* Hero text */}
@@ -93,11 +93,10 @@ const styles = StyleSheet.create({
   },
   logoEmoji: { fontSize: 30 },
   logoLabel: {
-    fontSize: FontSize.xs,
-    fontWeight: '800',
-    letterSpacing: 0.18,
-    color: 'rgba(255,255,255,0.55)',
-    textTransform: 'uppercase',
+    fontSize: FontSize.lg,
+    fontFamily: 'Arvo_700Bold',
+    letterSpacing: -0.2,
+    color: 'rgba(255,255,255,0.85)',
   },
   hero: { gap: 14 },
   heroTitle: {

@@ -12,6 +12,7 @@ import {
   Inter_600SemiBold,
   Inter_700Bold,
 } from '@expo-google-fonts/inter';
+import { Arvo_700Bold } from '@expo-google-fonts/arvo';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 
 SplashScreen.preventAutoHideAsync();
@@ -25,6 +26,7 @@ function RootLayoutNav() {
     Inter_500Medium,
     Inter_600SemiBold,
     Inter_700Bold,
+    Arvo_700Bold,
   });
 
   const { session, loading } = useAuth();

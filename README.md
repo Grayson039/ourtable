@@ -1,11 +1,11 @@
-# Our Table
+# OurTable
 
 *"The recipe app built for your whole household — not just you."*
 Save from anywhere. Know your fridge. Cook for everyone.
 
 ---
 
-## What Is Our Table?
+## What Is OurTable?
 
 A household recipe app that solves three friction points of home cooking: *finding* recipes you want to make, *knowing* what you have to cook with, and *shopping* without doubling up or missing things.
 
@@ -93,4 +93,4 @@ OurTable/                         ← root
 
 ---
 
-*OUR TABLE · Everyone eats.*
+*OURTABLE · Everyone eats.*

@@ -116,7 +116,7 @@ export default function ProfileScreen() {
               <Text style={styles.plusBadgeText}>PLUS</Text>
             </View>
             <View>
-              <Text style={styles.plusTitle}>Our Table Plus</Text>
+              <Text style={styles.plusTitle}>OurTable Plus</Text>
               <Text style={styles.plusSub}>Unlimited recipes · Priority support</Text>
             </View>
           </View>
@@ -185,7 +185,7 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        <Text style={styles.version}>Our Table v1.0.0 · Everyone eats.</Text>
+        <Text style={styles.version}>OurTable v1.0.0 · Everyone eats.</Text>
       </ScrollView>
 
       {/* Edit profile modal */}

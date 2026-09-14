@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-// Our Table Design System — Theme Constants
+// OurTable Design System — Theme Constants
 // Locked palette (matches the logo mark): Teal #3D7A8A · Brick #A33636 ·
 // Charcoal #3B4653 · Cream #F4EFDC · Card #FFFFFF. Key names kept stable
 // so every consuming screen/component needed no changes — only the
