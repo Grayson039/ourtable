@@ -71,10 +71,14 @@ The old `screens/` scaffold (broken, DO NOT USE) has been deleted entirely — `
 
 ## Supabase Project
 
-- URL: `https://bpkqiimhlpzkycxyncjk.supabase.co`
-- Anon key: `sb_publishable_6EskZ_CzgCcQc6hdnrX-tQ_pwrDbPtt`
-- Schema: ✅ Deployed
+- URL: `https://nfdtdfrmqypoeraduezt.supabase.co`
+- Anon key: `sb_publishable_GHpCssY4uWHTvn3PLQvYjg_T2cMuj0V`
+- Schema: ⚠️ pending — run `supabase/migrations/001_schema.sql` in the SQL Editor if not done yet
 - `.env`: ✅ at `screens-new/.env` (gitignored — was never tracked, stays that way)
+
+**2026-09-16:** the project this used to point at (`bpkqiimhlpzkycxyncjk.supabase.co`) was fake — DNS didn't
+resolve, and "Schema: Deployed" was never actually true. Nobody had run a real signup through either app
+before today, only visual/mock-data checks. This is a fresh, real project; the URL/key above are current.
 
 ---
 

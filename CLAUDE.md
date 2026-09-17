@@ -101,10 +101,17 @@ The nested-folder/theme-resolution bug that used to live here was fixed 2026-09-
 
 ## Supabase Project
 
-- URL: `https://bpkqiimhlpzkycxyncjk.supabase.co`
-- Anon key: `sb_publishable_6EskZ_CzgCcQc6hdnrX-tQ_pwrDbPtt`
-- Schema: ✅ Deployed
+- URL: `https://nfdtdfrmqypoeraduezt.supabase.co`
+- Anon key: `sb_publishable_GHpCssY4uWHTvn3PLQvYjg_T2cMuj0V`
+- Schema: ⚠️ needs verifying — see Known Issues below
 - `.env`: ✅ at `screens-new/.env` (gitignored — not tracked)
+
+**2026-09-16: this is a real project, replacing a fake one.** The URL/key that lived here before
+(`bpkqiimhlpzkycxyncjk.supabase.co`) returned `DNS_PROBE_FINISHED_NXDOMAIN` — it never existed, or was
+deleted, and nobody had actually exercised a real signup against it (native app screens were only ever
+verified against mock data). "Schema: ✅ Deployed" was therefore never true either. Confirm the schema in
+`supabase/migrations/001_schema.sql` has actually been run against *this* project (SQL Editor → paste → Run)
+before trusting any Supabase-backed feature.
 
 ---
 
