@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Our Table — Interactive Prototype</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap');
 
@@ -193,6 +194,14 @@ body {
 (function(){
 
 /* ═══════════════════════════════════════════════════
+   SUPABASE — same project + schema as the native app
+═══════════════════════════════════════════════════ */
+var SUPABASE_URL = 'https://bpkqiimhlpzkycxyncjk.supabase.co';
+// Publishable/anon key — safe to ship client-side, every table it can touch is RLS-gated.
+var SUPABASE_ANON_KEY = 'sb_publishable_6EskZ_CzgCcQc6hdnrX-tQ_pwrDbPtt';
+var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+/* ═══════════════════════════════════════════════════
    THEMES
 ═══════════════════════════════════════════════════ */
 var L = {
@@ -225,7 +234,13 @@ var state = {
   scanned: false,
   cookStep: 0,
   toast: null,
-  toastTimer: null
+  toastTimer: null,
+  // auth — real Supabase session, not mock state
+  userId: null,
+  profileId: null,
+  householdId: null,
+  authError: null,
+  authLoading: false
 };
 
 var NAMES = ['Welcome','Sign In','Create Account','Your Household','Home','Recipe Detail','Grocery List','Fridge Scanner','Cooking Mode'];
@@ -314,6 +329,11 @@ function input(id, type, placeholder, value) {
   return '<input type="'+type+'" id="'+id+'" placeholder="'+placeholder+'" value="'+(value||'')+'" style="'+base+'">';
 }
 
+function authErrorHtml() {
+  if(!state.authError) return '';
+  return '<div style="background:#FDECEA;border:1px solid #F3B4B0;color:#B3261E;font-size:12px;font-weight:600;padding:10px 12px;border-radius:10px;margin-bottom:14px">'+state.authError+'</div>';
+}
+
 function backBtn(label) {
   var c = th();
   label = label || '';
@@ -352,6 +372,7 @@ function sWelcome() {
     +'</div>'
     // CTAs
     +'<div style="padding:0 28px 42px;display:flex;flex-direction:column;gap:12px">'
+      +(state.authError ? '<div style="margin-bottom:4px">'+authErrorHtml()+'</div>' : '')
       +btn('Get Started','window.otGo(2)','primary')
       +btn('Sign In','window.otGo(1)','secondary')
       +'<div style="text-align:center;font-size:11px;color:'+c.muted+'">By continuing you agree to our Terms of Service</div>'
@@ -370,13 +391,14 @@ function sSignIn() {
     +'<div style="flex:1;padding:12px 28px 28px;overflow-y:auto;display:flex;flex-direction:column">'
       +'<div style="font-size:28px;font-weight:800;color:'+c.text+';font-family:Playfair Display,Georgia,serif;margin-bottom:6px;line-height:1.15">Welcome<br>back 👋</div>'
       +'<div style="font-size:13px;color:'+c.muted+';margin-bottom:28px">Sign in to your Our Table account</div>'
+      +authErrorHtml()
       +'<div style="font-size:12px;font-weight:600;color:'+c.text+';margin-bottom:6px">Email</div>'
-      +input('si-email','email','your@email.com','will@ourtable.app')
+      +input('si-email','email','your@email.com','')
       +'<div style="height:12px"></div>'
       +'<div style="font-size:12px;font-weight:600;color:'+c.text+';margin-bottom:6px">Password</div>'
       +input('si-pass','password','Password','')
-      +'<div style="text-align:right;margin:10px 0 20px"><span style="font-size:12px;color:'+c.primary+';font-weight:600;cursor:pointer">Forgot password?</span></div>'
-      +btn('Sign In','window.otGo(4)','primary')
+      +'<div style="text-align:right;margin:10px 0 20px"><span onclick="window.otForgotPassword()" style="font-size:12px;color:'+c.primary+';font-weight:600;cursor:pointer">Forgot password?</span></div>'
+      +btn(state.authLoading?'Signing in…':'Sign In', state.authLoading?'':'window.otSubmitSignIn()','primary')
       +'<div style="display:flex;align-items:center;gap:10px;margin:18px 0">'
         +'<div style="flex:1;height:1px;background:'+c.border+'"></div>'
         +'<span style="font-size:11px;color:'+c.muted+'">or</span>'
@@ -405,6 +427,7 @@ function sCreateAccount() {
     +'<div style="flex:1;padding:12px 28px 28px;overflow-y:auto;display:flex;flex-direction:column">'
       +'<div style="font-size:26px;font-weight:800;color:'+c.text+';font-family:Playfair Display,Georgia,serif;line-height:1.2;margin-bottom:6px">Create your<br>account</div>'
       +'<div style="font-size:13px;color:'+c.muted+';margin-bottom:24px">Join thousands of households cooking better</div>'
+      +authErrorHtml()
       // Name row
       +'<div style="display:flex;gap:10px;margin-bottom:12px">'
         +'<div style="flex:1"><div style="font-size:12px;font-weight:600;color:'+c.text+';margin-bottom:6px">First name</div>'+input('ca-fname','text','Will','')+'</div>'
@@ -416,7 +439,7 @@ function sCreateAccount() {
       +'<div style="font-size:12px;font-weight:600;color:'+c.text+';margin-bottom:6px">Password</div>'
       +input('ca-pass','password','Create a password','')
       +'<div style="height:18px"></div>'
-      +btn('Continue →','window.otContinueSignUp()','primary')
+      +btn(state.authLoading?'Creating account…':'Continue →', state.authLoading?'':'window.otSubmitSignUp()','primary')
       +'<div style="height:16px"></div>'
       +'<div style="text-align:center;font-size:13px;color:'+c.muted+'">Already have an account? <span onclick="window.otGo(1)" style="color:'+c.primary+';font-weight:600;cursor:pointer">Sign in</span></div>'
     +'</div>'
@@ -443,6 +466,7 @@ function sHousehold() {
     +'<div style="flex:1;padding:12px 28px 28px;overflow-y:auto;display:flex;flex-direction:column">'
       +'<div style="font-size:26px;font-weight:800;color:'+c.text+';font-family:Playfair Display,Georgia,serif;line-height:1.2;margin-bottom:6px">Who\'s at your<br>table? 👨‍👩‍👧</div>'
       +'<div style="font-size:13px;color:'+c.muted+';margin-bottom:22px">We\'ll tailor every recipe to your household\'s needs</div>'
+      +authErrorHtml()
       // Members
       +'<div style="font-size:13px;font-weight:700;color:'+c.text+';margin-bottom:10px">Household members</div>'
       +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px">'
@@ -459,7 +483,7 @@ function sHousehold() {
       +'<div style="font-size:13px;font-weight:700;color:'+c.text+';margin-bottom:4px">Dietary preferences</div>'
       +'<div style="font-size:12px;color:'+c.muted+';margin-bottom:12px">Select all that apply</div>'
       +'<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px">'+dietHtml+'</div>'
-      +btn('Get Cooking 🍳','window.otGo(4)','primary')
+      +btn(state.authLoading?'Setting up…':'Get Cooking 🍳', state.authLoading?'':'window.otSubmitHousehold()','primary')
     +'</div>'
   +'</div>';
 }
@@ -479,7 +503,7 @@ function sHome() {
     // Header
     +'<div style="padding:8px 22px 6px;display:flex;justify-content:space-between;align-items:center">'
       +'<div style="font-size:26px;font-weight:800;color:'+c.primary+';font-family:Playfair Display,Georgia,serif;letter-spacing:-0.5px">Our Table</div>'
-      +'<img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" style="width:38px;height:38px;border-radius:50%;object-fit:cover;cursor:pointer;border:2.5px solid '+c.primary+';flex-shrink:0">'
+      +'<img onclick="window.otSignOut()" src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" style="width:38px;height:38px;border-radius:50%;object-fit:cover;cursor:pointer;border:2.5px solid '+c.primary+';flex-shrink:0">'
     +'</div>'
     +'<div style="padding:2px 22px 12px">'
       +'<div style="font-size:15px;font-weight:600;color:'+c.text+'">Good evening, '+state.signUpName+' 👋</div>'
@@ -863,14 +887,6 @@ window.otFilter = function(f) {
   render();
 };
 
-/* ── SIGN UP ── */
-window.otContinueSignUp = function() {
-  var fn = document.getElementById('ca-fname');
-  var ln = document.getElementById('ca-lname');
-  if(fn && fn.value.trim()) state.signUpName = fn.value.trim() + (ln && ln.value.trim() ? '' : '');
-  window.otGo(3);
-};
-
 window.otToggleDietary = function(opt) {
   var idx = state.dietary.indexOf(opt);
   if(idx>=0) state.dietary.splice(idx,1);
@@ -879,9 +895,173 @@ window.otToggleDietary = function(opt) {
 };
 
 /* ═══════════════════════════════════════════════════
-   INIT
+   AUTH — real Supabase, same project/schema as the native app
 ═══════════════════════════════════════════════════ */
-render('anim-up');
+
+// Loads the signed-in user's profile and routes to household setup or home.
+function loadProfileAndRoute() {
+  return supabaseClient.from('profiles').select('*').eq('id', state.userId).single()
+    .then(function(res){
+      state.authLoading = false;
+      if(res.error || !res.data){
+        state.authError = 'Could not load your profile. Please try signing in again.';
+        render();
+        return;
+      }
+      state.profileId = res.data.id;
+      state.signUpName = res.data.name || state.signUpName;
+      state.householdId = res.data.household_id || null;
+      state.dietary = [];
+      window.otGo(state.householdId ? 4 : 3);
+    });
+}
+
+window.otSubmitSignUp = function() {
+  var fn = document.getElementById('ca-fname');
+  var emailEl = document.getElementById('ca-email');
+  var passEl = document.getElementById('ca-pass');
+  var firstName = fn && fn.value.trim();
+  var email = emailEl && emailEl.value.trim();
+  var password = passEl && passEl.value;
+
+  state.authError = null;
+  if(!firstName || !email || !password){
+    state.authError = 'Please fill in your name, email, and password.';
+    render();
+    return;
+  }
+
+  state.authLoading = true;
+  render();
+
+  supabaseClient.auth.signUp({ email: email, password: password }).then(function(res){
+    if(res.error) throw new Error(res.error.message);
+    var user = res.data.user;
+    if(!user) throw new Error('Check your inbox to confirm your email, then sign in.');
+    state.userId = user.id;
+    // Trigger creates the profile row too, but we upsert as a fallback (mirrors the native app).
+    return supabaseClient.from('profiles').upsert({ id: user.id, name: firstName, avatar_url: null, household_id: null });
+  }).then(function(profRes){
+    if(profRes && profRes.error) throw new Error(profRes.error.message);
+    state.authLoading = false;
+    state.profileId = state.userId;
+    state.signUpName = firstName;
+    window.otGo(3);
+  }).catch(function(err){
+    state.authLoading = false;
+    state.authError = err.message || 'Something went wrong. Please try again.';
+    render();
+  });
+};
+
+window.otSubmitSignIn = function() {
+  var emailEl = document.getElementById('si-email');
+  var passEl = document.getElementById('si-pass');
+  var email = emailEl && emailEl.value.trim();
+  var password = passEl && passEl.value;
+
+  state.authError = null;
+  if(!email || !password){
+    state.authError = 'Enter your email and password.';
+    render();
+    return;
+  }
+
+  state.authLoading = true;
+  render();
+
+  supabaseClient.auth.signInWithPassword({ email: email, password: password }).then(function(res){
+    if(res.error) throw new Error(res.error.message);
+    state.userId = res.data.user.id;
+    return loadProfileAndRoute();
+  }).catch(function(err){
+    state.authLoading = false;
+    state.authError = err.message || 'Sign in failed. Please try again.';
+    render();
+  });
+};
+
+window.otForgotPassword = function() {
+  var emailEl = document.getElementById('si-email');
+  var email = emailEl && emailEl.value.trim();
+  if(!email){
+    state.authError = 'Enter your email above first, then tap "Forgot password?"';
+    render();
+    return;
+  }
+  supabaseClient.auth.resetPasswordForEmail(email).then(function(res){
+    if(res.error){ state.authError = res.error.message; render(); return; }
+    showToast('Password reset email sent ✓');
+  });
+};
+
+window.otSubmitHousehold = function() {
+  if(!state.profileId){
+    state.authError = 'You need to be signed in first.';
+    render();
+    return;
+  }
+
+  state.authError = null;
+  state.authLoading = true;
+  render();
+
+  var householdName = (state.signUpName || 'Our') + '’s Household';
+
+  supabaseClient.from('households').insert({ name: householdName, owner_id: state.profileId }).select().single()
+    .then(function(hhRes){
+      if(hhRes.error) throw new Error(hhRes.error.message);
+      state.householdId = hhRes.data.id;
+      return supabaseClient.from('profiles').update({ household_id: hhRes.data.id }).eq('id', state.profileId);
+    })
+    .then(function(updRes){
+      if(updRes && updRes.error) throw new Error(updRes.error.message);
+      return supabaseClient.from('household_members').insert({ household_id: state.householdId, profile_id: state.profileId, role: 'owner' });
+    })
+    .then(function(memRes){
+      if(memRes && memRes.error) throw new Error(memRes.error.message);
+      if(!state.dietary.length) return;
+      var rows = state.dietary.filter(function(p){ return p !== 'None'; }).map(function(p){ return { profile_id: state.profileId, preference: p }; });
+      if(!rows.length) return;
+      return supabaseClient.from('dietary_preferences').insert(rows);
+    })
+    .then(function(dietRes){
+      if(dietRes && dietRes.error) throw new Error(dietRes.error.message);
+      state.authLoading = false;
+      window.otGo(4);
+    })
+    .catch(function(err){
+      state.authLoading = false;
+      state.authError = err.message || 'Could not set up your household. Please try again.';
+      render();
+    });
+};
+
+window.otSignOut = function() {
+  if(!window.confirm('Sign out of Our Table?')) return;
+  supabaseClient.auth.signOut().then(function(){
+    state.userId = null;
+    state.profileId = null;
+    state.householdId = null;
+    state.dietary = [];
+    state.authError = null;
+    state.hist = [];
+    window.otGo(0);
+  });
+};
+
+/* ═══════════════════════════════════════════════════
+   INIT — restore a real session instead of always starting at Welcome
+═══════════════════════════════════════════════════ */
+supabaseClient.auth.getSession().then(function(res){
+  var session = res.data && res.data.session;
+  if(session && session.user){
+    state.userId = session.user.id;
+    loadProfileAndRoute();
+  } else {
+    render('anim-up');
+  }
+});
 
 })();
 </script>
